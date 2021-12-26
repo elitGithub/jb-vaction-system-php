@@ -1,12 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
-
+const initialStateValue = false;
 // Exporting the whole slice of data from the store
 export const modalSlice = createSlice({
     name: "modal",
     initialState: {
-        value: {
-            isShown: false,
-        },
+        value: initialStateValue,
     },
     // The actions that can be performed.
     // Basically an object that is a function, that alters the state of the parent object (slice) it takes
