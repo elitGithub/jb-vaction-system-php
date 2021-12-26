@@ -1,16 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 // Exporting the whole slice of data from the store
-export const userSlice = createSlice({
-    name: "user",
+export const modalSlice = createSlice({
+    name: "modal",
     initialState: {
         value: {
-            firstName: '',
-            lastName: '',
-            email: '',
-            password: '',
-            loggedIn: false,
-            isAdmin: false
+            isShown: false,
         },
     },
     // The actions that can be performed.
@@ -18,14 +13,15 @@ export const userSlice = createSlice({
     // In this case, login would modify the above defined initial state to whatever was passed as the 'payload' argument
     // So we would have firstName = action.payload.firstName, for example.
     reducers: {
-        login: (state, action) => {
+        showHide: (state, action) => {
             state.value = action.payload;
         }
     }
 });
 
+
 // Exporting just the reducer method
-export default userSlice.reducer;
+export default modalSlice.reducer;
 
 // Exporting just actions as functions
-export const { login } = userSlice.actions;
+export const { showHide } = modalSlice.actions;

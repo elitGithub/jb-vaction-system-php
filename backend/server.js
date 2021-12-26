@@ -17,7 +17,7 @@ app.get('/vacation-list(.html)?', (req, res) => {
 });
 
 app.post('/login(.html)?', (req, res) => {
-    logEvents.emit('log', `Example app listening at http://localhost:${port}`);
+    logEvents.emit('log', `Login`);
     res.send(JSON.stringify({'success': true, 'message': 'logged in'}));
 });
 

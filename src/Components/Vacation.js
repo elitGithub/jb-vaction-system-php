@@ -27,7 +27,7 @@ const Vacation = (props) => {
             <div className={classes.card}>
                 <div className={classes['card-header']}>
                     {!isAdmin && <div className={classes['top-buttons']}>
-                        <span className={tagClasses.join(' ')}>{props.name}</span>
+                        <span className={tagClasses.join(' ')} onClick={followOrUnfollow}>{props.name}</span>
                         <span className={followClasses.join(' ')} onClick={followOrUnfollow}>{followText}</span>
                     </div>}
 

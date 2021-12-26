@@ -2,7 +2,8 @@ import axios from 'axios';
 
 const LoginService = {
     login: async (username, password) => {
-        return await axios.post('http://localhost:3006/login', {username, password});
+        const response = await axios.post('http://localhost:3006/login', {username, password});
+        return await response.data;
     },
 
     secondValidationMethod: function(value) {

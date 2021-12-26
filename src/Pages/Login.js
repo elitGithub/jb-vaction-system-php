@@ -2,12 +2,14 @@ import { Fragment, useState } from "react";
 import classes from "../Components/Login.module.css";
 import { Link } from "react-router-dom";
 import { validatePassword, validateUserName } from "../shared/utils";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { login } from '../features/user';
 import LoginService from "../services/loginService";
 
 const Login = () => {
     const loginService = LoginService;
     const user = useSelector((state) => state.user.value);
+    const dispatch = useDispatch();
     const [inputs, setInputs] = useState({});
     const [validEmail, setValidEmail] = useState(false);
     const [validaPassword, setValidPassword] = useState(false);
@@ -37,8 +39,18 @@ const Login = () => {
         if (validEmail && validaPassword) {
             // TODO: DB call to validate the data on the backend.
             setInputError(false);
-            console.log('logged in!');
             const response = await loginService.login(inputs.username, inputs.password);
+            if (response.hasOwnProperty('success') && response.success === true) {
+                // Here we'll later use the data from be!
+                dispatch(login({
+                    firstName: 'John',
+                    lastName: 'Doe',
+                    email: inputs.email,
+                    password: inputs.password,
+                    loggedIn: true,
+                    isAdmin: true,
+                }));
+            }
             return;
         }
 
@@ -46,28 +58,28 @@ const Login = () => {
     }
 
     return (<Fragment>
-        <form onSubmit={handleSubmit} className={classes.form}>
-            <h2>Login to your account {user.name}</h2>
+        <form onSubmit={ handleSubmit } className={ classes.form }>
+            <h2>Login to your account { user.name }</h2>
 
-            <div className={classes['input-parent']}>
+            <div className={ classes['input-parent'] }>
                 <label htmlFor="username">Email</label>
-                <input className={inputError ? classes['input-error'] : ''}
+                <input className={ inputError ? classes['input-error'] : '' }
                        type="email"
                        name="username"
-                       value={inputs.username || ""}
-                       onInput={handleChange}/>
+                       value={ inputs.username || "" }
+                       onInput={ handleChange }/>
             </div>
-            <div className={classes['input-parent']}>
+            <div className={ classes['input-parent'] }>
                 <label htmlFor="password">Password</label>
-                <input className={inputError ? classes['input-error'] : ''}
+                <input className={ inputError ? classes['input-error'] : '' }
                        type="password"
                        name="password"
-                       value={inputs.password || ""}
-                       onInput={handleChange}/>
+                       value={ inputs.password || "" }
+                       onInput={ handleChange }/>
             </div>
-            <div className={classes['button-wrapper']}>
-                <button className={classes['login-btn']} type="submit">Login</button>
-                <button className={classes['login-btn']}><Link to="/register">Don't have an account?</Link></button>
+            <div className={ classes['button-wrapper'] }>
+                <button className={ classes['login-btn'] } type="submit">Login</button>
+                <button className={ classes['login-btn'] }><Link to="/register">Don't have an account?</Link></button>
             </div>
         </form>
 
