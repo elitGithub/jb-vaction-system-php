@@ -1,5 +1,5 @@
 const User = require('../models/User');
-const logEvents = require('../logEvents');
+const logEvents = require('../middleware/logEvents');
 const register = async (params) => {
     try {
         const user = await User.create({
@@ -26,7 +26,14 @@ const findUser = async (searchParams) => {
 
 const listUsers = async () => {
     try {
-        return await User.find();
+        const users = await User.find({});
+        console.log(users);
+        const userMap = {};
+        users.forEach((user) => {
+            console.log(user);
+            userMap[user._id] = user;
+        });
+        return await User.find({});
     } catch (e) {
         logEvents.emit('error', e);
         return false;
