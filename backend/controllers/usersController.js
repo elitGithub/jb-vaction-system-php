@@ -15,15 +15,22 @@ const register = async (params) => {
     }
 };
 
-const listUsers = async (searchParams) => {
+const findUser = async (searchParams) => {
     try {
-        const user = await User.find({ searchParams });
-        console.log('user', user);
-        return await user;
+        return await User.find(searchParams);
     } catch (e) {
         logEvents.emit('error', e);
         return false;
     }
 };
 
-module.exports = { register, listUsers }
+const listUsers = async () => {
+    try {
+        return await User.find();
+    } catch (e) {
+        logEvents.emit('error', e);
+        return false;
+    }
+};
+
+module.exports = { register, findUser, listUsers };

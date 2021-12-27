@@ -34,9 +34,14 @@ app.post('/register(.html)?', async (req, res) => {
     res.end();
 });
 
-app.post('/users-list(.html)?', async (req, res) => {
-    const result = await usersController.listUsers(req.body);
-    res.json({ 'success': result, 'message': '', data: result });
+app.post('/find-user(.html)?', async (req, res) => {
+    const result = await usersController.findUser(req.body);
+    res.json({ 'success': !!result, 'message': '', data: result });
+    res.end();
+});
+app.get('/users-list(.html)?', async (req, res) => {
+    const result = await usersController.listUsers();
+    res.json({ 'success': !!result, 'message': '', data: result });
     res.end();
 });
 
