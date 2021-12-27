@@ -1,16 +1,29 @@
-const User =  require('../models/User');
+const User = require('../models/User');
 const logEvents = require('../logEvents');
 const register = async (params) => {
-    console.log(params);
-    return true;
-    /*
-    const user = new User({userName: 'we@are.pirates', password: 'arrrrrr', firstName: 'Monkey D', lastName: 'Luffy'});
     try {
-        await user.save();
+        const user = await User.create({
+            userName: params.userName,
+            password: params.password,
+            firstName: params.firstName,
+            lastName: params.lastName
+        });
+        return user.id;
     } catch (e) {
-        logEvents.emit('error', e.message());
+        logEvents.emit('error', e);
         return false;
-    }*/
+    }
 };
 
-module.exports = { register, }
+const listUsers = async (searchParams) => {
+    try {
+        const user = await User.find({ searchParams });
+        console.log('user', user);
+        return await user;
+    } catch (e) {
+        logEvents.emit('error', e);
+        return false;
+    }
+};
+
+module.exports = { register, listUsers }

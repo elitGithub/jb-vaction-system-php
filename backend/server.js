@@ -29,9 +29,14 @@ app.post('/login(.html)?', (req, res) => {
 });
 
 app.post('/register(.html)?', async (req, res) => {
-    console.log(req.body);
     const result = await usersController.register(req.body);
-    res.json({ 'success': result, 'message': result ? 'user saved' : 'user now saved' });
+    res.json({ 'success': !!result, 'message': 'user saved' });
+    res.end();
+});
+
+app.post('/users-list(.html)?', async (req, res) => {
+    const result = await usersController.listUsers(req.body);
+    res.json({ 'success': result, 'message': '', data: result });
     res.end();
 });
 
