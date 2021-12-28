@@ -14,10 +14,10 @@ const logEvents = async (message) => {
     const logItem = `${dateTime}\t${uuid()}\t${message}\r\n`;
     console.log(logItem);
     try {
-        if (!fs.existsSync(path.join(__dirname, '../logs'))) {
-            await fsPromises.mkdir(path.join(__dirname, '../logs'));
+        if (!fs.existsSync(path.join(__dirname, '..', 'logs'))) {
+            await fsPromises.mkdir(path.join(__dirname, '..', 'logs'));
         }
-        await fsPromises.appendFile(path.join(__dirname, '../logs', 'eventLog.log'), logItem);
+        await fsPromises.appendFile(path.join(__dirname, '..', 'logs', 'eventLog.log'), logItem);
     } catch (err) {
         console.error(err);
     }
@@ -27,10 +27,10 @@ const logErrors = async (errorMessage) => {
     const dateTime = `${format(new Date(), 'yyyy-MM-dd\tHH:mm:ss')}`;
     const logItem = `${dateTime}\t${uuid()}\t${errorMessage}\r\n`;
     try {
-        if (!fs.existsSync(path.join(__dirname, '../logs'))) {
-            await fsPromises.mkdir(path.join(__dirname, '../logs'));
+        if (!fs.existsSync(path.join(__dirname, '..', 'logs'))) {
+            await fsPromises.mkdir(path.join(__dirname, '..', 'logs'));
         }
-        await fsPromises.appendFile(path.join(__dirname, '../logs', 'errorsLog.log'), logItem);
+        await fsPromises.appendFile(path.join(__dirname, '..', 'logs', 'errorsLog.log'), logItem);
     } catch (err) {
         console.error(err);
     }
