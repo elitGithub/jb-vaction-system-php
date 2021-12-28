@@ -4,7 +4,7 @@ const path = require('path');
 const app = express();
 const cors = require('cors');
 const port = process.env.PORT || 3006;
-const logEvents = require('./middleware/logEvents');
+const { requestLogger, logEvents } = require('./middleware/logEvents');
 const usersController = require('./controllers/usersController');
 
 
@@ -12,10 +12,7 @@ app.use(cors());
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 
-app.use((req, res, next) => {
-    logEvents.emit('log', `Method: ${req.method}, path: ${req.path}` );
-    next();
-});
+app.use(requestLogger);
 
 app.use(express.static(path.join(__dirname, '../build/')));
 

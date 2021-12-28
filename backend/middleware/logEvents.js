@@ -36,7 +36,12 @@ const logErrors = async (errorMessage) => {
     }
 }
 
+const requestLogger = (req, res, next) => {
+    logEvents(`${req.method}\t${req.headers.origin}\t${req.url}`);
+    next();
+}
+
 customEmitter.on('log', message => logEvents(message));
 customEmitter.on('error', message => logErrors(message));
 
-module.exports = customEmitter;
+module.exports = { requestLogger, customEmitter };
