@@ -16,9 +16,14 @@
 .DS_Store
 .env.local
 .env.development.local
+.env.development
 .env.test.local
 .env.production.local
-
+src/config/.env.production
+.env
+config.json
+config.prod.json
+config.dev.json
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

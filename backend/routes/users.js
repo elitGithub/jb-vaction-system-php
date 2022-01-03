@@ -3,10 +3,15 @@ const router = express.Router();
 const path = require('path');
 const usersController = require("../controllers/usersController");
 
-router.post('/login(.html)?', (req, res) => {
-    console.log(req.body);
-    res.json({ 'success': true, 'message': 'logged in' });
-});
+
+router.route('/login(.html)?')
+    .get((req, res) => {
+       res.json({'hu':'huhu'});
+    })
+    .post((req, res) => {
+        console.log(req.body);
+        res.json({ 'success': true, 'message': 'logged in' });
+    });
 
 router.post('/register(.html)?', async (req, res) => {
     const result = await usersController.register(req.body);

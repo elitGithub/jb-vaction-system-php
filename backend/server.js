@@ -27,7 +27,7 @@ app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '..', 'build/')));
 app.use(rootRouter);
-app.use(usersRouter);
+app.use('/api/users/', usersRouter);
 app.use(vacationsRouter);
 
 app.all('*', (req, res) => {
