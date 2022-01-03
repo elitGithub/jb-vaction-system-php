@@ -4,56 +4,37 @@ const path = require('path');
 const app = express();
 const cors = require('cors');
 const port = process.env.PORT || 3006;
-const { requestLogger, logEvents } = require('./middleware/logEvents');
-const usersController = require('./controllers/usersController');
-
-
-app.use(cors());
-app.use(express.urlencoded({extended: true}));
-app.use(express.json());
+const { requestLogger, errorsLogger, logEvents } = require('./middleware/logEvents');
+const rootRouter = require('./routes/root');
+const usersRouter = require('./routes/users');
+const vacationsRouter = require('./routes/vacations');
 
 app.use(requestLogger);
 
-app.use(express.static(path.join(__dirname, '../build/')));
+const whiteList = ['http://127.0.0.1:3000', 'http://127.0.0.1', 'http://localhost:3500', 'http://localhost:3000'];
+const corsOptions = {
+    origin: (origin, callback) => {
+        if (whiteList.includes(origin) || !origin) {
+            callback(null, true);
+        } else {
+            callback(new Error('Blocked by CORS policy.'));
+        }
+    },
+    optionsSuccessStatus: 200
+};
+app.use(cors(corsOptions));
+app.use(express.urlencoded({extended: true}));
+app.use(express.json());
+app.use(express.static(path.join(__dirname, '..', 'build/')));
+app.use(rootRouter);
+app.use(usersRouter);
+app.use(vacationsRouter);
 
-
-
-app.get('^/$|/index(.html)?', (req, res) => {
-    res.sendFile('index.html');
-});
-
-app.get('/vacation-list(.html)?', (req, res) => {
-    res.sendFile('index.html');
-});
-
-app.post('/login(.html)?', (req, res) => {
-    // logEvents.emit('log', `Login`);
-    console.log(req.body);
-    res.json({ 'success': true, 'message': 'logged in' });
-    //res.send(JSON.stringify({ 'success': true, 'message': 'logged in' }));
-});
-
-app.post('/register(.html)?', async (req, res) => {
-    const result = await usersController.register(req.body);
-    res.json({ 'success': !!result, 'message': 'user saved' });
-    res.end();
-});
-
-app.post('/find-user(.html)?', async (req, res) => {
-    const result = await usersController.findUser(req.body);
-    res.json({ 'success': !!result, 'message': '', data: result });
-    res.end();
-});
-app.get('/users-list(.html)?', async (req, res) => {
-    const result = await usersController.listUsers();
-    console.log(result);
-    res.json({ 'success': !!result, 'message': '', data: result });
-    res.end();
-});
-
-app.get('/*', (req, res) => {
+app.all('*', (req, res) => {
     res.redirect('/');
 });
+
+app.use(errorsLogger);
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${ port }`)

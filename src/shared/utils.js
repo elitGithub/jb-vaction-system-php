@@ -3,7 +3,8 @@ export const validateUserName = (string) => {
 }
 
 export const validatePassword = (string) => {
-    return string.length > 7;
+    console.log(string);
+    return string.length >= 7;
 }
 
 export const validateAlphanumeric = (string) =>  {

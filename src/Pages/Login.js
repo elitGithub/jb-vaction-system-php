@@ -12,7 +12,7 @@ const Login = () => {
     const dispatch = useDispatch();
     const [inputs, setInputs] = useState({});
     const [validEmail, setValidEmail] = useState(false);
-    const [validaPassword, setValidPassword] = useState(false);
+    const [validPassword, setValidPassword] = useState(false);
     const [inputError, setInputError] = useState(false);
 
     const handleChange = (event) => {
@@ -36,7 +36,7 @@ const Login = () => {
             return;
         }
 
-        if (validEmail && validaPassword) {
+        if (validEmail && validPassword) {
             // TODO: DB call to validate the data on the backend.
             setInputError(false);
             const response = await loginService.login(inputs.username, inputs.password);
@@ -67,7 +67,8 @@ const Login = () => {
                        type="email"
                        name="username"
                        value={ inputs.username || "" }
-                       onInput={ handleChange }/>
+                       onChange={ handleChange }/>
+                {!validEmail && inputError && <span className={classes['error-message']}>User Name must be a valid email</span>}
             </div>
             <div className={ classes['input-parent'] }>
                 <label htmlFor="password">Password</label>
@@ -75,7 +76,8 @@ const Login = () => {
                        type="password"
                        name="password"
                        value={ inputs.password || "" }
-                       onInput={ handleChange }/>
+                       onChange={ handleChange }/>
+                {!validPassword && inputError &&  <span className={classes['error-message']}>Password must be at least 7 characters long</span>}
             </div>
             <div className={ classes['button-wrapper'] }>
                 <button className={ classes['login-btn'] } type="submit">Login</button>
