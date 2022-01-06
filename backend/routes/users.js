@@ -5,9 +5,6 @@ const usersController = require("../controllers/usersController");
 
 
 router.route('/login(.html)?')
-    .get((req, res) => {
-       res.json({'hu':'huhu'});
-    })
     .post((req, res) => {
         console.log(req.body);
         res.json({ 'success': true, 'message': 'logged in' });
