@@ -1,92 +1,142 @@
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import classes from "../Components/Register.module.css";
 import { Link } from "react-router-dom";
-import { validateAlphanumeric, validatePassword, validateUserName } from "../shared/utils";
-
+import { validateAlphanumeric, validateAndMatchPasswords, validatePassword, validateUserName } from "../shared/utils";
+import { faCheck, faInfoCircle, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const Register = () => {
 
-    const [inputs, setInputs] = useState({});
+    const emailRef = useRef();
+    const errRef = useRef();
+
+    // Username
+    const [email, setEmail] = useState('');
+    const [emailFocus, setEmailFocus] = useState(false);
     const [validEmail, setValidEmail] = useState(false);
-    const [validaPassword, setValidPassword] = useState(false);
-    const [validName, setValidName] = useState(false);
+    // Username
+
+    // Password
+    const [password, setPassword] = useState('');
+    const [passwordFocus, setPasswordFocus] = useState(false);
+    const [validPassword, setValidPassword] = useState(false);
+    // Password
+
+    // Match Password
+    const [matchPassword, setPasswordMatch] = useState('');
+    const [passwordMatchFocus, setpasswordMatchFocus] = useState(false);
+    const [validPasswordMatch, setValidPasswordMatch] = useState(false);
+    // Match Password
+
+    // Passwords are valid and matching
+    const [matchingPwds, setPwdsMatchingPwds] = useState(false);
+    // Passwords are valid and matching
+
+
+    const [firstName, setFirsttName] = useState('');
+    const [firstNameFocus, setFirstNameFocus] = useState(false);
+    const [validFirstName, setValidFirstName] = useState(false);
+
+    const [lastName, setLastName] = useState('');
+    const [lastNameFocus, setLastNameFocus] = useState(false);
     const [validLastName, setValidLastName] = useState(false);
-    const [inputError, setInputError] = useState(false);
 
-    const handleChange = (event) => {
-        setInputError(false);
-        const name = event.target.name;
-        const value = event.target.value;
-        setInputs(values => ({ ...values, [name]: value }));
-        if (inputs.username) {
-            setValidEmail(validateUserName(inputs.username));
-        }
 
-        if (inputs.password) {
-            setValidPassword(validatePassword(inputs.password));
-        }
+    const [errMessage, setErrMessage] = useState('');
+    const [success, setSuccess] = useState(false);
 
-        if (inputs.firstName) {
-            setValidName(validateAlphanumeric(inputs.firstName));
-        }
+    useEffect(() => {
+        emailRef.current.focus();
+    }, []);
 
-        if (inputs.lastName) {
-            setValidLastName(validateAlphanumeric(inputs.lastName));
-        }
-    }
+    useEffect(() => {
+        setValidFirstName(validateAlphanumeric(firstName));
+    }, [firstName]);
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        if (!inputs.username || !inputs.password || !inputs.firstName || !inputs.lastName) {
-            setInputError(true);
-            return;
-        }
+    useEffect(() => {
+        setValidLastName(validateAlphanumeric(lastName));
+    }, [lastName]);
 
-        if (validEmail && validaPassword && validName && validLastName) {
-            // TODO: DB call to validate the data on the backend.
-            // Username must be unique.
-            setInputError(false);
-            console.log('hey! registered!');
-            return;
-        }
+    useEffect(() => {
+        const result = validateUserName(email);
+        console.log(result);
+        console.log(email);
+        setValidEmail(result);
+    }, [email]);
 
-        setInputError(true);
-    }
+    useEffect(() => {
+        const resultPwd = validatePassword(password);
+        setValidPassword(resultPwd);
+        console.log('resultPwd', resultPwd);
+        const resultPwdMatch = validatePassword(matchPassword);
+        setValidPasswordMatch(resultPwdMatch);
+        console.log('resultPwdMatch', resultPwdMatch);
+        const match = (password === matchPassword);
+        console.log('match', match);
+        setPasswordMatch(validateAndMatchPasswords(password, matchPassword));
+    }, [password, matchPassword]);
+
+    useEffect(() => {
+        setErrMessage('')
+    }, [email, password, matchPassword]);
+
     return (<Fragment>
-        <form onSubmit={handleSubmit} className={classes.form}>
-            <h2>Login to your account</h2>
+        <p ref={errRef} className={errMessage ? classes.errorMessage : classes.offScreen}
+           aria-live="assertive">{errMessage}</p>
+        <form className="form">
+            <h2>Register</h2>
+
+            <div className={classes['input-parent']}>
+                <label htmlFor="username">Username:
+                    <FontAwesomeIcon icon={faCheck} className={validEmail ? classes.valid : classes.hide} />
+                    <FontAwesomeIcon icon={faTimes} className={validEmail || !email ? classes.hide : classes.invalid} />
+                </label>
+                <input type="email"
+                       id="username"
+                       ref={emailRef}
+                       autoComplete="off"
+                       onChange={(e) => {
+                           setEmail(e.target.value)
+                       }}
+                       required
+                       aria-invalid={validEmail ? "false" : "true"}
+                       aria-describedby="uidnote"
+                       name="username"
+                       value={email}
+                       onFocus={() => setEmailFocus(true)}
+                       onBlur={() => setEmailFocus(false)}/>
+                <p id="uidnote"
+                   className={emailFocus && email && !validEmail ? classes.instructions : classes.offScreen}>
+                    <FontAwesomeIcon icon={faInfoCircle}/>
+                    Must be a valid email address.
+                </p>
+            </div>
 
             <div className={classes['input-parent']}>
                 <label htmlFor="firstName">First Name</label>
-                <input className={inputError ? classes['input-error'] : ''}
-                       type="text"
-                       name="firstName"
-                       value={inputs.firstName || ""}
-                       onInput={handleChange}/>
+                <input
+                    type="text"
+                    name="firstName"
+                    value={firstName || ""}
+                />
+
             </div>
             <div className={classes['input-parent']}>
                 <label htmlFor="lastName">Last Name</label>
-                <input className={inputError ? classes['input-error'] : ''}
-                       type="text"
-                       name="lastName"
-                       value={inputs.lastName || ""}
-                       onInput={handleChange}/>
+                <input
+                    type="text"
+                    name="lastName"
+                    value={lastName || ""}
+                />
             </div>
-            <div className={classes['input-parent']}>
-                <label htmlFor="username">Email</label>
-                <input className={inputError ? classes['input-error'] : ''}
-                       type="email"
-                       name="username"
-                       value={inputs.username || ""}
-                       onInput={handleChange}/>
-            </div>
+
             <div className={classes['input-parent']}>
                 <label htmlFor="password">Password</label>
-                <input className={inputError ? classes['input-error'] : ''}
-                       type="password"
-                       name="password"
-                       value={inputs.password || ""}
-                       onInput={handleChange}/>
+                <input
+                    type="password"
+                    name="password"
+                    value={password || ""}
+                />
             </div>
 
             <div className={classes['button-wrapper']}>

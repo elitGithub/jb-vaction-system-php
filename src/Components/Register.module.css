@@ -1,14 +1,14 @@
-.form {
-    display: flex;
-    flex-direction: column;
-    width: max-content;
-    margin: 40px auto;
-    font-family: "Segoe UI", sans-serif;
-    padding: 25px 28px;
-    background: #151414;
-    border-radius: 4px;
-    border: 1px solid #302d2d;
-    animation: popup 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+.errorMessage {
+    background-color: lightpink;
+    color: firebrick;
+    font-weight: bold;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.offScreen {
+    position: absolute;
+    left: -9999px;
 }
 
 
@@ -35,6 +35,40 @@ h2 {
     display: block;
     margin-bottom: 20px;
 }
+
+
+.instructions {
+    font-size: 0.75rem;
+    border-radius: 0.5rem;
+    background: #000;
+    color: #fff;
+    padding: 0.25rem;
+    position: relative;
+    bottom: -10px;
+}
+
+.instructions > svg {
+    margin-right: 0.25rem;
+}
+
+.valid {
+    color: limegreen;
+    margin-left: 0.25rem;
+}
+
+.line {
+    display: inline-block;
+}
+
+.invalid {
+    color: red;
+    margin-left: 0.25rem;
+}
+
+.hide {
+    display: none;
+}
+
 
 label {
     display: block;
