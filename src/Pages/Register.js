@@ -24,7 +24,7 @@ const Register = () => {
 
     // Match Password
     const [matchPassword, setPasswordMatch] = useState('');
-    const [passwordMatchFocus, setpasswordMatchFocus] = useState(false);
+    const [passwordMatchFocus, setPasswordMatchFocus] = useState(false);
     const [validPasswordMatch, setValidPasswordMatch] = useState(false);
     // Match Password
 
@@ -33,7 +33,7 @@ const Register = () => {
     // Passwords are valid and matching
 
 
-    const [firstName, setFirsttName] = useState('');
+    const [firstName, setFirstName] = useState('');
     const [firstNameFocus, setFirstNameFocus] = useState(false);
     const [validFirstName, setValidFirstName] = useState(false);
 
@@ -113,12 +113,29 @@ const Register = () => {
             </div>
 
             <div className={classes['input-parent']}>
-                <label htmlFor="firstName">First Name</label>
+                <label htmlFor="firstName">First Name:
+                    <FontAwesomeIcon icon={faCheck} className={validFirstName ? classes.valid : classes.hide} />
+                    <FontAwesomeIcon icon={faTimes} className={validFirstName || !firstName ? classes.hide : classes.invalid} />
+                </label>
                 <input
                     type="text"
+                    id="firstName"
                     name="firstName"
                     value={firstName || ""}
+                    required
+                    onInput={(e) => {
+                        setFirstName(e.target.value)
+                    }}
+                    aria-invalid={validFirstName ? "false" : "true"}
+                    aria-describedby="fnamenote"
+                    onFocus={() => setFirstNameFocus(true)}
+                    onBlur={() => setFirstNameFocus(false)}
                 />
+                <p id="fnamenote"
+                   className={firstNameFocus && firstName && !validFirstName ? classes.instructions : classes.offScreen}>
+                    <FontAwesomeIcon icon={faInfoCircle}/>
+                    Must be alphanumeric.
+                </p>
 
             </div>
             <div className={classes['input-parent']}>
@@ -126,17 +143,68 @@ const Register = () => {
                 <input
                     type="text"
                     name="lastName"
+                    id="lastName"
                     value={lastName || ""}
+                    onInput={(e) => {
+                        setLastName(e.target.value)
+                    }}
+                    required
+                    aria-invalid={validLastName ? "false" : "true"}
+                    aria-describedby="lnamenote"
+                    onFocus={() => setLastNameFocus(true)}
+                    onBlur={() => setLastNameFocus(false)}
                 />
+                <p id="lnamenote"
+                   className={lastNameFocus && lastName && !validLastName ? classes.instructions : classes.offScreen}>
+                    <FontAwesomeIcon icon={faInfoCircle}/>
+                    Must be alphanumeric.
+                </p>
             </div>
 
             <div className={classes['input-parent']}>
-                <label htmlFor="password">Password</label>
+                <label htmlFor="password">Password:</label>
                 <input
                     type="password"
+                    id="password"
                     name="password"
                     value={password || ""}
+                    onInput={(e) => {
+                        setPassword(e.target.value)
+                    }}
+                    required
+                    aria-invalid={validPassword ? "false" : "true"}
+                    aria-describedby="pwdnote"
+                    onFocus={() => setPasswordFocus(true)}
+                    onBlur={() => setPasswordFocus(false)}
                 />
+                <p id="pwdnote"
+                   className={passwordFocus && password && !validPassword ? classes.instructions : classes.offScreen}>
+                    <FontAwesomeIcon icon={faInfoCircle}/>
+                    Must be alphanumeric.
+                </p>
+            </div>
+
+            <div className={classes['input-parent']}>
+                <label htmlFor="passwordMatch">Repeat Password:</label>
+                <input
+                    type="password"
+                    id="passwordMatch"
+                    name="passwordMatch"
+                    value={matchPassword || ""}
+                    onInput={(e) => {
+                        setPasswordMatch(e.target.value)
+                    }}
+                    required
+                    aria-invalid={validPasswordMatch ? "false" : "true"}
+                    aria-describedby="pwdMatchnote"
+                    onFocus={() => setPasswordMatchFocus(true)}
+                    onBlur={() => setPasswordMatchFocus(false)}
+                />
+                <p id="pwdMatchnote"
+                   className={passwordMatchFocus && matchPassword && !validPasswordMatch ? classes.instructions : classes.offScreen}>
+                    <FontAwesomeIcon icon={faInfoCircle}/>
+                    Must be alphanumeric.
+                </p>
             </div>
 
             <div className={classes['button-wrapper']}>
