@@ -59,21 +59,18 @@ const Register = () => {
 
     useEffect(() => {
         const result = validateUserName(email);
-        console.log(result);
-        console.log(email);
         setValidEmail(result);
     }, [email]);
 
     useEffect(() => {
         const resultPwd = validatePassword(password);
+        console.log('password is', password);
+        console.log('resultPwd check res', resultPwd);
         setValidPassword(resultPwd);
-        console.log('resultPwd', resultPwd);
         const resultPwdMatch = validatePassword(matchPassword);
         setValidPasswordMatch(resultPwdMatch);
-        console.log('resultPwdMatch', resultPwdMatch);
         const match = (password === matchPassword);
-        console.log('match', match);
-        setPasswordMatch(validateAndMatchPasswords(password, matchPassword));
+        setPwdsMatchingPwds(validateAndMatchPasswords(password, matchPassword));
     }, [password, matchPassword]);
 
     useEffect(() => {
@@ -162,12 +159,14 @@ const Register = () => {
             </div>
 
             <div className={classes['input-parent']}>
-                <label htmlFor="password">Password:</label>
+                <label htmlFor="password">Password:
+                    <FontAwesomeIcon icon={faCheck} className={validPassword ? classes.valid : classes.hide} />
+                    <FontAwesomeIcon icon={faTimes} className={validPassword || !password ? classes.hide : classes.invalid} />
+                </label>
                 <input
                     type="password"
                     id="password"
-                    name="password"
-                    value={password || ""}
+                    value={password}
                     onInput={(e) => {
                         setPassword(e.target.value)
                     }}
@@ -178,19 +177,28 @@ const Register = () => {
                     onBlur={() => setPasswordFocus(false)}
                 />
                 <p id="pwdnote"
-                   className={passwordFocus && password && !validPassword ? classes.instructions : classes.offScreen}>
+                   className={passwordFocus && !validPassword ? classes.instructions : classes.offScreen}>
                     <FontAwesomeIcon icon={faInfoCircle}/>
-                    Must be alphanumeric.
+                    At least 7 characters long.
+                    Must contain at least one lower case and one upper case letter.
+                    Allowed special characters: <br />
+                    <span aria-label="exclamation mark">!</span>
+                    <span aria-label="at symbol">@</span>
+                    <span aria-label="hashtag">#</span>
+                    <span aria-label="dollar sign">$</span>
+                    <span aria-label="percent">%</span>
                 </p>
             </div>
 
             <div className={classes['input-parent']}>
-                <label htmlFor="passwordMatch">Repeat Password:</label>
+                <label htmlFor="passwordMatch">Repeat Password:
+                    <FontAwesomeIcon icon={faCheck} className={validPasswordMatch ? classes.valid : classes.hide} />
+                    <FontAwesomeIcon icon={faTimes} className={validPasswordMatch || !matchPassword ? classes.hide : classes.invalid} />
+                </label>
                 <input
                     type="password"
                     id="passwordMatch"
-                    name="passwordMatch"
-                    value={matchPassword || ""}
+                    value={matchPassword}
                     onInput={(e) => {
                         setPasswordMatch(e.target.value)
                     }}
@@ -201,9 +209,16 @@ const Register = () => {
                     onBlur={() => setPasswordMatchFocus(false)}
                 />
                 <p id="pwdMatchnote"
-                   className={passwordMatchFocus && matchPassword && !validPasswordMatch ? classes.instructions : classes.offScreen}>
+                   className={passwordMatchFocus && !validPasswordMatch ? classes.instructions : classes.offScreen}>
                     <FontAwesomeIcon icon={faInfoCircle}/>
-                    Must be alphanumeric.
+                    At least 7 characters long.
+                    Must contain at least one lower case and one upper case letter.
+                    Allowed special characters: <br />
+                    <span aria-label="exclamation mark">!</span>
+                    <span aria-label="at symbol">@</span>
+                    <span aria-label="hashtag">#</span>
+                    <span aria-label="dollar sign">$</span>
+                    <span aria-label="percent">%</span>
                 </p>
             </div>
 
