@@ -6,14 +6,16 @@ export const validateUserName = (string) => {
 }
 
 export const validatePassword = (string) => {
-    console.log('validatePassword', string);
     return string.length >= 7 && PWD_REGEX.test(string);
 }
 
-export const validateAndMatchPasswords = (password, passwordMatch) => {
+export const validateAndMatchPasswords = (password, confirmPass) => {
+    if (!password || !confirmPass) {
+        return false;
+    }
     const passwordIsValid = validatePassword(password);
-    const passwordMatchIsValid = validatePassword(passwordMatch);
-    const passwordsAreIdentical = passwordMatch === password;
+    const passwordMatchIsValid = validatePassword(confirmPass);
+    const passwordsAreIdentical = confirmPass === password;
     return passwordIsValid && passwordMatchIsValid && passwordsAreIdentical;
 };
 

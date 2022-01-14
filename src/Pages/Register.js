@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { validateAlphanumeric, validateAndMatchPasswords, validatePassword, validateUserName } from "../shared/utils";
 import { faCheck, faInfoCircle, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import user from "../features/user";
 
 const Register = () => {
 
@@ -23,13 +24,13 @@ const Register = () => {
     // Password
 
     // Match Password
-    const [matchPassword, setPasswordMatch] = useState('');
-    const [passwordMatchFocus, setPasswordMatchFocus] = useState(false);
-    const [validPasswordMatch, setValidPasswordMatch] = useState(false);
+    const [confirmPwd, setConfirmPwd] = useState('');
+    const [confirmPwdFocus, setConfirmPwdFocus] = useState(false);
+    const [validConfirmPwd, setValidConfirmPwd] = useState(false);
     // Match Password
 
     // Passwords are valid and matching
-    const [matchingPwds, setPwdsMatchingPwds] = useState(false);
+    const [matchingPwds, setMatchingPwds] = useState(false);
     // Passwords are valid and matching
 
 
@@ -63,24 +64,28 @@ const Register = () => {
     }, [email]);
 
     useEffect(() => {
-        const resultPwd = validatePassword(password);
-        console.log('password is', password);
-        console.log('resultPwd check res', resultPwd);
-        setValidPassword(resultPwd);
-        const resultPwdMatch = validatePassword(matchPassword);
-        setValidPasswordMatch(resultPwdMatch);
-        const match = (password === matchPassword);
-        setPwdsMatchingPwds(validateAndMatchPasswords(password, matchPassword));
-    }, [password, matchPassword]);
+        setValidPassword(validatePassword(password));
+        setValidConfirmPwd(validatePassword(confirmPwd));
+        setMatchingPwds(validateAndMatchPasswords(password, confirmPwd));
+    }, [password, confirmPwd]);
 
     useEffect(() => {
         setErrMessage('')
-    }, [email, password, matchPassword]);
+    }, [email, password, confirmPwd]);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (!validateUserName(email) || !validateAndMatchPasswords(password, confirmPwd)) {
+            setErrMessage('Invalid Entry');
+            return;
+        }
+
+    };
 
     return (<Fragment>
         <p ref={errRef} className={errMessage ? classes.errorMessage : classes.offScreen}
            aria-live="assertive">{errMessage}</p>
-        <form className="form">
+        <form onSubmit={handleSubmit} className="form">
             <h2>Register</h2>
 
             <div className={classes['input-parent']}>
@@ -136,7 +141,10 @@ const Register = () => {
 
             </div>
             <div className={classes['input-parent']}>
-                <label htmlFor="lastName">Last Name</label>
+                <label htmlFor="lastName">Last Name:
+                    <FontAwesomeIcon icon={faCheck} className={validLastName ? classes.valid : classes.hide} />
+                    <FontAwesomeIcon icon={faTimes} className={validLastName || !lastName ? classes.hide : classes.invalid} />
+                </label>
                 <input
                     type="text"
                     name="lastName"
@@ -181,7 +189,7 @@ const Register = () => {
                     <FontAwesomeIcon icon={faInfoCircle}/>
                     At least 7 characters long.
                     Must contain at least one lower case and one upper case letter.
-                    Allowed special characters: <br />
+                    Allowed special characters:
                     <span aria-label="exclamation mark">!</span>
                     <span aria-label="at symbol">@</span>
                     <span aria-label="hashtag">#</span>
@@ -191,39 +199,38 @@ const Register = () => {
             </div>
 
             <div className={classes['input-parent']}>
-                <label htmlFor="passwordMatch">Repeat Password:
-                    <FontAwesomeIcon icon={faCheck} className={validPasswordMatch ? classes.valid : classes.hide} />
-                    <FontAwesomeIcon icon={faTimes} className={validPasswordMatch || !matchPassword ? classes.hide : classes.invalid} />
+                <label htmlFor="confirmPass">
+                    Confirm Password:
+                    <span className={matchingPwds && validConfirmPwd ? classes.valid : classes.hide}>
+                        <FontAwesomeIcon icon={faCheck} />
+                    </span>
+                    <span  className={matchingPwds || !validConfirmPwd ? classes.hide : classes.invalid} >
+                        <FontAwesomeIcon icon={faTimes} />
+                    </span>
+
                 </label>
                 <input
                     type="password"
-                    id="passwordMatch"
-                    value={matchPassword}
+                    id="confirmPass"
+                    value={confirmPwd}
                     onInput={(e) => {
-                        setPasswordMatch(e.target.value)
+                        setConfirmPwd(e.target.value)
                     }}
                     required
-                    aria-invalid={validPasswordMatch ? "false" : "true"}
-                    aria-describedby="pwdMatchnote"
-                    onFocus={() => setPasswordMatchFocus(true)}
-                    onBlur={() => setPasswordMatchFocus(false)}
+                    aria-invalid={validConfirmPwd ? "false" : "true"}
+                    aria-describedby="confirm-note"
+                    onFocus={() => setConfirmPwdFocus(true)}
+                    onBlur={() => setConfirmPwdFocus(false)}
                 />
-                <p id="pwdMatchnote"
-                   className={passwordMatchFocus && !validPasswordMatch ? classes.instructions : classes.offScreen}>
+                <p id="confirm-note"
+                   className={confirmPwdFocus && !matchingPwds ? classes.instructions : classes.offScreen}>
                     <FontAwesomeIcon icon={faInfoCircle}/>
-                    At least 7 characters long.
-                    Must contain at least one lower case and one upper case letter.
-                    Allowed special characters: <br />
-                    <span aria-label="exclamation mark">!</span>
-                    <span aria-label="at symbol">@</span>
-                    <span aria-label="hashtag">#</span>
-                    <span aria-label="dollar sign">$</span>
-                    <span aria-label="percent">%</span>
+                    Must match the password input field.
                 </p>
             </div>
 
             <div className={classes['button-wrapper']}>
-                <button className={classes['login-btn']} type="submit">Register</button>
+                <button className={classes['login-btn']} type="submit" disabled={!validFirstName || !validLastName || !validEmail || !matchingPwds} onClick={handleSubmit}>Register</button>
                 <button className={classes['login-btn']}><Link to="/login">Already Have an account?</Link></button>
             </div>
         </form>

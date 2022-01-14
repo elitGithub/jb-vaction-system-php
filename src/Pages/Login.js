@@ -58,7 +58,7 @@ const Login = () => {
     }
 
     return (<Fragment>
-        <form onSubmit={ handleSubmit } className={ classes.form }>
+        <form onSubmit={ handleSubmit } className="form">
             <h2>Login to your account { user.name }</h2>
 
             <div className={ classes['input-parent'] }>
