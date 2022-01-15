@@ -93,14 +93,9 @@ const Register = () => {
         }));
 
         if (resUser.meta.requestStatus === 'fulfilled') {
-            dispatch(login({
-                firstName: firstName,
-                lastName: lastName,
-                email: email,
-                password: password,
-                loggedIn: true,
-                isAdmin: false,
-            }));
+            dispatch(login(resUser.payload));
+            console.log(resUser);
+            console.log(user);
             setRedirect(user.loggedIn);
         } else {
             setErrMessage('registration failed');
@@ -115,6 +110,7 @@ const Register = () => {
 
     return (<Fragment>
         {redirect && <Navigate to="/" />}
+        {user && <p>{user.email}</p>}
         <p ref={errRef} className={errMessage ? classes.errorMessage : classes.offScreen}
            aria-live="assertive">{errMessage}</p>
         <form onSubmit={handleSubmit} className="form">
