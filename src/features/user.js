@@ -1,4 +1,7 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import UsersService from "../services/usersService";
+import loginService from "../services/loginService";
+
 const initialStateValue = {
     firstName: '',
     lastName: '',
@@ -7,23 +10,86 @@ const initialStateValue = {
     loggedIn: false,
     isAdmin: false
 };
+
+export const register = createAsyncThunk('users/register', async (user, thunk) => {
+    try {
+        const res = await UsersService.register({ email: user.email, password: user.password, firstName: user.firstName, lastName: user.lastName });
+        const data = res.data;
+        if (res.hasOwnProperty('success') && res.success === true) {
+            console.log('success', data);
+            return data;
+        } else {
+            console.log('failed', null);
+            return null;
+        }
+    } catch (err) {
+        let error = err // cast the error for access
+        if (!error.response) {
+            throw err
+        }
+        return thunk.rejectWithValue(error.response.data);
+    }
+
+});
+
+export const login = createAsyncThunk('users/login', async (user, thunk) => {
+    try {
+        const res = await loginService.login(user);
+        const data = res.data;
+        if (res.hasOwnProperty('success') && res.success === true) {
+            console.log('success', data);
+            return data;
+        } else {
+            console.log('failed', null);
+            return null;
+        }
+    } catch (err) {
+        let error = err // cast the error for access
+        if (!error.response) {
+            throw err
+        }
+        return thunk.rejectWithValue(error.response.data);
+    }
+});
 // Exporting the whole slice of data from the store
 export const userSlice = createSlice({
     name: "user",
     initialState: {
         value: initialStateValue,
+        pending: null,
+        error: false,
     },
     // The actions that can be performed.
     // Basically an object that is a function, that alters the state of the parent object (slice) it takes
     // In this case, login would modify the above defined initial state to whatever was passed as the 'payload' argument
     // So we would have firstName = action.payload.firstName, for example.
     reducers: {
-        login: (state, action) => {
-            state.value = action.payload;
-        },
         logout: (state, action) => {
-            state.value = initialStateValue;
-        }
+            return {
+                ...state,
+                value: initialStateValue
+            }
+        },
+    },
+    extraReducers: builder => {
+        builder
+            .addCase(register.pending, (state) => {
+                state.status = 'loading';
+                state.pending = true;
+                state.error = false;
+            })
+            .addCase(register.rejected, (state) => {
+                state.status = 'rejected';
+                state.pending = null;
+                state.error = true;
+            })
+            .addCase(register.fulfilled, (state, action) => {
+                state.status = 'idle';
+                state.pending = null;
+                state.error = false;
+                state.user = action.payload;
+                localStorage.setItem('state!', JSON.stringify(state.user));
+            });
     }
 });
 
@@ -31,4 +97,4 @@ export const userSlice = createSlice({
 export default userSlice.reducer;
 
 // Exporting just actions as functions
-export const { login, logout } = userSlice.actions;
+export const { logout } = userSlice.actions;

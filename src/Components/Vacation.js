@@ -1,12 +1,24 @@
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import classes from "./Vacation.module.css";
 import { DeleteOutline, EditOutlined } from "@mui/icons-material";
+import { useSelector } from "react-redux";
 
 // TODO: user section is decorative for now
 const Vacation = (props) => {
     // TODO: this will be state controlled
+    const user = useSelector((state) => state.user.value);
     const [isFollowed, setIsFollowed] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
+    const [loggedIn, setLoggedIn] = useState(false);
+
+    useEffect(() => {
+        setIsAdmin(user?.isAdmin);
+    }, [user]);
+
+    useEffect(() => {
+        setLoggedIn(user?.loggedIn)
+    }, [user]);
+
     const tagClasses = [
         classes['tag'],
         isFollowed ? classes['tag-teal'] : classes['tag-grey'],
@@ -26,7 +38,7 @@ const Vacation = (props) => {
     return (<Fragment>
             <div className={classes.card}>
                 <div className={classes['card-header']}>
-                    {!isAdmin && <div className={classes['top-buttons']}>
+                    {!isAdmin && loggedIn && <div className={classes['top-buttons']}>
                         <span className={tagClasses.join(' ')} onClick={followOrUnfollow}>{props.name}</span>
                         <span className={followClasses.join(' ')} onClick={followOrUnfollow}>{followText}</span>
                     </div>}

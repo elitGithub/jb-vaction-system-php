@@ -1,13 +1,15 @@
 import { Fragment, useEffect, useRef, useState } from "react";
 import classes from "../Components/Register.module.css";
-import { Link } from "react-router-dom";
+import { Link, Navigate, } from "react-router-dom";
 import { validateAlphanumeric, validateAndMatchPasswords, validatePassword, validateUserName } from "../shared/utils";
 import { faCheck, faInfoCircle, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import user from "../features/user";
+import { useDispatch, useSelector } from "react-redux";
+import { register, login } from "../features/user";
 
 const Register = () => {
-
+    const user = useSelector((state) => state.user.value);
+    const dispatch = useDispatch();
     const emailRef = useRef();
     const errRef = useRef();
 
@@ -34,6 +36,7 @@ const Register = () => {
     // Passwords are valid and matching
 
 
+    // User's name
     const [firstName, setFirstName] = useState('');
     const [firstNameFocus, setFirstNameFocus] = useState(false);
     const [validFirstName, setValidFirstName] = useState(false);
@@ -41,10 +44,10 @@ const Register = () => {
     const [lastName, setLastName] = useState('');
     const [lastNameFocus, setLastNameFocus] = useState(false);
     const [validLastName, setValidLastName] = useState(false);
-
+    // User's name
 
     const [errMessage, setErrMessage] = useState('');
-    const [success, setSuccess] = useState(false);
+    const [redirect, setRedirect] = useState(false);
 
     useEffect(() => {
         emailRef.current.focus();
@@ -80,9 +83,38 @@ const Register = () => {
             return;
         }
 
+        const resUser = await dispatch(register({
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            password: password,
+            loggedIn: true,
+            isAdmin: false,
+        }));
+
+        if (resUser.meta.requestStatus === 'fulfilled') {
+            dispatch(login({
+                firstName: firstName,
+                lastName: lastName,
+                email: email,
+                password: password,
+                loggedIn: true,
+                isAdmin: false,
+            }));
+            setRedirect(user.loggedIn);
+        } else {
+            setErrMessage('registration failed');
+            errRef.current.focus();
+            setRedirect(false);
+        }
+
+        console.log(user);
+
+
     };
 
     return (<Fragment>
+        {redirect && <Navigate to="/" />}
         <p ref={errRef} className={errMessage ? classes.errorMessage : classes.offScreen}
            aria-live="assertive">{errMessage}</p>
         <form onSubmit={handleSubmit} className="form">
@@ -90,8 +122,8 @@ const Register = () => {
 
             <div className={classes['input-parent']}>
                 <label htmlFor="username">Username:
-                    <FontAwesomeIcon icon={faCheck} className={validEmail ? classes.valid : classes.hide} />
-                    <FontAwesomeIcon icon={faTimes} className={validEmail || !email ? classes.hide : classes.invalid} />
+                    <FontAwesomeIcon icon={faCheck} className={validEmail ? classes.valid : classes.hide}/>
+                    <FontAwesomeIcon icon={faTimes} className={validEmail || !email ? classes.hide : classes.invalid}/>
                 </label>
                 <input type="email"
                        id="username"
@@ -116,8 +148,8 @@ const Register = () => {
 
             <div className={classes['input-parent']}>
                 <label htmlFor="firstName">First Name:
-                    <FontAwesomeIcon icon={faCheck} className={validFirstName ? classes.valid : classes.hide} />
-                    <FontAwesomeIcon icon={faTimes} className={validFirstName || !firstName ? classes.hide : classes.invalid} />
+                    <FontAwesomeIcon icon={faCheck} className={validFirstName ? classes.valid : classes.hide}/>
+                    <FontAwesomeIcon icon={faTimes} className={validFirstName || !firstName ? classes.hide : classes.invalid}/>
                 </label>
                 <input
                     type="text"
@@ -142,8 +174,8 @@ const Register = () => {
             </div>
             <div className={classes['input-parent']}>
                 <label htmlFor="lastName">Last Name:
-                    <FontAwesomeIcon icon={faCheck} className={validLastName ? classes.valid : classes.hide} />
-                    <FontAwesomeIcon icon={faTimes} className={validLastName || !lastName ? classes.hide : classes.invalid} />
+                    <FontAwesomeIcon icon={faCheck} className={validLastName ? classes.valid : classes.hide}/>
+                    <FontAwesomeIcon icon={faTimes} className={validLastName || !lastName ? classes.hide : classes.invalid}/>
                 </label>
                 <input
                     type="text"
@@ -168,8 +200,9 @@ const Register = () => {
 
             <div className={classes['input-parent']}>
                 <label htmlFor="password">Password:
-                    <FontAwesomeIcon icon={faCheck} className={validPassword ? classes.valid : classes.hide} />
-                    <FontAwesomeIcon icon={faTimes} className={validPassword || !password ? classes.hide : classes.invalid} />
+                    <FontAwesomeIcon icon={faCheck} className={validPassword ? classes.valid : classes.hide}/>
+                    <FontAwesomeIcon icon={faTimes}
+                                     className={validPassword || !password ? classes.hide : classes.invalid}/>
                 </label>
                 <input
                     type="password"
@@ -202,10 +235,10 @@ const Register = () => {
                 <label htmlFor="confirmPass">
                     Confirm Password:
                     <span className={matchingPwds && validConfirmPwd ? classes.valid : classes.hide}>
-                        <FontAwesomeIcon icon={faCheck} />
+                        <FontAwesomeIcon icon={faCheck}/>
                     </span>
-                    <span  className={matchingPwds || !validConfirmPwd ? classes.hide : classes.invalid} >
-                        <FontAwesomeIcon icon={faTimes} />
+                    <span className={matchingPwds || !validConfirmPwd ? classes.hide : classes.invalid}>
+                        <FontAwesomeIcon icon={faTimes}/>
                     </span>
 
                 </label>
@@ -230,11 +263,13 @@ const Register = () => {
             </div>
 
             <div className={classes['button-wrapper']}>
-                <button className={classes['login-btn']} type="submit" disabled={!validFirstName || !validLastName || !validEmail || !matchingPwds} onClick={handleSubmit}>Register</button>
+                <button className={classes['login-btn']} type="submit"
+                        disabled={!validFirstName || !validLastName || !validEmail || !matchingPwds}
+                        onClick={handleSubmit}>Register
+                </button>
                 <button className={classes['login-btn']}><Link to="/login">Already Have an account?</Link></button>
             </div>
         </form>
-
     </Fragment>)
 }
 

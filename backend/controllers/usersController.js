@@ -2,15 +2,16 @@ const User = require('../models/User');
 const logEvents = require('../middleware/logEvents');
 const register = async (params) => {
     try {
-        const user = await User.create({
-            userName: params.userName,
+        return await User.create({
+            userName: params.email,
             password: params.password,
             firstName: params.firstName,
-            lastName: params.lastName
+            lastName: params.lastName,
+            isAdmin: false,
+            loggedIn: true
         });
-        return user.id;
     } catch (e) {
-        logEvents.emit('error', e);
+        logEvents.customEmitter.emit('error', e);
         return false;
     }
 };
@@ -19,7 +20,7 @@ const findUser = async (searchParams) => {
     try {
         return await User.find(searchParams);
     } catch (e) {
-        logEvents.emit('error', e);
+        logEvents.customEmitter.emit('error', e);
         return false;
     }
 };
@@ -35,7 +36,7 @@ const listUsers = async () => {
         });
         return await User.find({});
     } catch (e) {
-        logEvents.emit('error', e);
+        logEvents.customEmitter.emit('error', e);
         return false;
     }
 };

@@ -3,16 +3,27 @@ const router = express.Router();
 const path = require('path');
 const usersController = require("../controllers/usersController");
 
+router.route('/login4(.html)?')
+    .post((req, res) => {
+        res.json({ success: true, message: '', data: {name: 'John Doe', email: 'John@doe'} });
+        res.end();
+    });
+
 
 router.route('/login(.html)?')
-    .post((req, res) => {
-        console.log(req.body);
-        res.json({ 'success': true, 'message': 'logged in' });
+    .post(async (req, res) => {
+        const data = await usersController.findUser({userName: req, password: req.password});
+        const success = !!data;
+        const message = success ? '' : 'An error has occurred';
+        res.json({ success, message, data });
+        res.end();
     });
 
 router.post('/register(.html)?', async (req, res) => {
-    const result = await usersController.register(req.body);
-    res.json({ 'success': !!result, 'message': 'user saved' });
+    const data = await usersController.register(req.body);
+    const success = !!data;
+    const message = success ? 'User saved' : 'Error Occurred during registration';
+    res.json({ success, message, data });
     res.end();
 });
 

@@ -3,10 +3,12 @@
 import { configureStore } from "@reduxjs/toolkit";
 import userReducer from './features/user';
 import modalReducer from './features/modal';
+import vacationReducer from "./features/vacation";
 
 const store = configureStore({
     reducer: {
         user: userReducer,
+        vacation: vacationReducer,
         modal: modalReducer
     }
 });

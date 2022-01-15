@@ -1,4 +1,4 @@
-import {Fragment, useState} from "react";
+import { Fragment, useEffect, useState } from "react";
 import classes from "./Navbar.module.css";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -11,29 +11,45 @@ export const Navbar = () => {
     const dispatch = useDispatch();
     const addVacation = (e) => {
         e.preventDefault();
-        dispatch(showHide({isShown: !modal.isShown}));
+        dispatch(showHide({ isShown: !modal.isShown }));
     };
 
-    return(<Fragment>
-        <div className={classes.topnav}>
-            {user.isAdmin && user.loggedIn && <Link to='/'>
+    const [loggedIn, setLoggedIn] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);
+
+    useEffect(() => {
+        setLoggedIn(user && user.loggedIn);
+        setIsAdmin(user && user.isAdmin && user.loggedIn);
+        console.log('in use effect', user);
+
+    }, [user]);
+
+    console.log('navbsar', user);
+
+    // setTimeout(() => {
+    //     console.log('timeout', state.user.getValue());
+    // }, 2000)
+
+    return (<Fragment>
+        <div className={ classes.topnav }>
+            { loggedIn && isAdmin && <Link to='/admin-panel'>
                 Admin Panel
-            </Link>}
-            {user.isAdmin && user.loggedIn && <button onClick={addVacation}>
+            </Link> }
+            { loggedIn && isAdmin && <button onClick={ addVacation }>
                 Add Vacation
-            </button>}
-            {user.loggedIn && <Link to={'/vacation-list'}>
+            </button> }
+            { loggedIn && <Link to={ '/vacation-list' }>
                 Vacation List
-            </Link>}
-            {!user.loggedIn && <Link to={'/login'}>
-                Login
-            </Link>}
-            {user.loggedIn && <Link to={'/logout'} onClick={() => dispatch((logout()))}>
+            </Link> }
+            { loggedIn && <Link to={ '/logout' } onClick={ () => dispatch((logout())) }>
                 Logout
-            </Link>}
-            {!user.loggedIn && <Link to={'/register'}>
+            </Link> }
+            { !loggedIn && <Link to={ '/login' }>
+                Login
+            </Link> }
+            { !loggedIn && <Link to={ '/register' }>
                 Register
-            </Link>}
+            </Link> }
         </div>
     </Fragment>);
 
