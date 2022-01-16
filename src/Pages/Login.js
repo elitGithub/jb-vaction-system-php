@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import classes from "../Components/Login.module.css";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { login } from "../features/user";
 
 const Login = () => {
@@ -13,6 +13,7 @@ const Login = () => {
     const [userName, setUserName] = useState('');
     const [password, setPassword] = useState('');
     const [errMessage, setErrMsg] = useState('');
+    const [redirect, setRedirect] = useState(false);
 
     const dispatch = useDispatch();
 
@@ -29,10 +30,13 @@ const Login = () => {
         console.log(loginSuccess);
         if (loginSuccess.meta.requestStatus === 'rejected') {
             setErrMsg(loginSuccess.payload.message ? loginSuccess.payload.message : 'Error occurred' );
+        } else if (loginSuccess.meta.requestStatus === 'fulfilled') {
+            setRedirect(loginSuccess.payload.success);
         }
     }
 
     return (<Fragment>
+        {redirect && <Navigate to="/" />}
         <form onSubmit={ handleSubmit } className="form">
             <p ref={ errRef } className={ errMessage ? "errorMessage" : "offScreen" } aria-live="assertive">{ errMessage }</p>
             <h2>Sign In</h2>
