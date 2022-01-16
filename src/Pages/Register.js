@@ -93,7 +93,7 @@ const Register = () => {
         }));
 
         if (resUser.meta.requestStatus === 'fulfilled') {
-            dispatch(login(resUser.payload));
+            await dispatch(login(resUser.payload));
             console.log(resUser);
             console.log(user);
             setRedirect(user.loggedIn);
