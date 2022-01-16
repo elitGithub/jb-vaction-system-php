@@ -33,14 +33,11 @@ export const register = createAsyncThunk('users/register', async (user, thunk) =
 
 export const login = createAsyncThunk('users/login', async (user, thunk) => {
     try {
-        console.log('36', user);
         const res = await loginService.login(user);
         const data = res.data;
         if (res.hasOwnProperty('success') && res.success === true) {
-            console.log('success', data);
             return data;
         } else {
-            console.log('failed', null);
             return null;
         }
     } catch (err) {
@@ -87,8 +84,13 @@ export const userSlice = createSlice({
                 state.status = 'idle';
                 state.pending = null;
                 state.error = false;
-                state.user = action.payload;
-                localStorage.setItem('state!', JSON.stringify(state.user));
+                state.value = action.payload;
+            })
+        .addCase(login.fulfilled, (state, action) => {
+                state.status = 'idle';
+                state.pending = null;
+                state.error = false;
+                state.value.loggedIn = true;
             });
     }
 });

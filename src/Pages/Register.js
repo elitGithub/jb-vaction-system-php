@@ -93,19 +93,13 @@ const Register = () => {
         }));
 
         if (resUser.meta.requestStatus === 'fulfilled') {
-            await dispatch(login(resUser.payload));
-            console.log(resUser);
-            console.log(user);
-            setRedirect(user.loggedIn);
+            const logingSuccess = await dispatch(login(resUser.payload));
+            setRedirect(logingSuccess);
         } else {
             setErrMessage('registration failed');
             errRef.current.focus();
             setRedirect(false);
         }
-
-        console.log(user);
-
-
     };
 
     return (<Fragment>
