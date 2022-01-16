@@ -1,83 +1,64 @@
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import classes from "../Components/Login.module.css";
 import { Link } from "react-router-dom";
-import { validatePassword, validateUserName } from "../shared/utils";
-import { useDispatch, useSelector } from "react-redux";
-import { login } from '../features/user';
-import LoginService from "../services/loginService";
+import { login } from "../features/user";
 
 const Login = () => {
-    const loginService = LoginService;
+    const emailRef = useRef();
+    const errRef = useRef();
+
     const user = useSelector((state) => state.user.value);
+
+    const [userName, setUserName] = useState('');
+    const [password, setPassword] = useState('');
+    const [errMessage, setErrMsg] = useState('');
+
     const dispatch = useDispatch();
-    const [inputs, setInputs] = useState({});
-    const [validEmail, setValidEmail] = useState(false);
-    const [validPassword, setValidPassword] = useState(false);
-    const [inputError, setInputError] = useState(false);
 
-    const handleChange = (event) => {
-        setInputError(false);
-        const name = event.target.name;
-        const value = event.target.value;
-        setInputs(values => ({ ...values, [name]: value }));
-        if (inputs.username) {
-            setValidEmail(validateUserName(inputs.username));
+    useEffect(() => {
+        emailRef.current.focus();
+    }, []);
+    useEffect(() => {
+        setErrMsg('');
+    }, [userName, password]);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const loginSuccess = await dispatch(login({userName, password}));
+        console.log(loginSuccess);
+        if (loginSuccess.meta.requestStatus === 'rejected') {
+            setErrMsg(loginSuccess.payload.message ? loginSuccess.payload.message : 'Error occurred' );
         }
-
-        if (inputs.password) {
-            setValidPassword(validatePassword(inputs.password));
-        }
-    }
-
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        if (!inputs.username || !inputs.password) {
-            setInputError(true);
-            return;
-        }
-
-        if (validEmail && validPassword) {
-            // TODO: DB call to validate the data on the backend.
-            setInputError(false);
-            const response = await loginService.login(inputs.username, inputs.password);
-            if (response.hasOwnProperty('success') && response.success === true) {
-                // Here we'll later use the data from be!
-                dispatch(login({
-                    firstName: 'John',
-                    lastName: 'Doe',
-                    email: inputs.email,
-                    password: inputs.password,
-                    loggedIn: true,
-                    isAdmin: true,
-                }));
-            }
-            return;
-        }
-
-        setInputError(true);
     }
 
     return (<Fragment>
         <form onSubmit={ handleSubmit } className="form">
-            <h2>Login to your account { user.name }</h2>
-
+            <p ref={ errRef } className={ errMessage ? "errorMessage" : "offScreen" } aria-live="assertive">{ errMessage }</p>
+            <h2>Sign In</h2>
             <div className={ classes['input-parent'] }>
-                <label htmlFor="username">Email</label>
-                <input className={ inputError ? classes['input-error'] : '' }
-                       type="email"
-                       name="username"
-                       value={ inputs.username || "" }
-                       onChange={ handleChange }/>
-                {!validEmail && inputError && <span className={classes['error-message']}>User Name must be a valid email</span>}
+                <label htmlFor="username">Username:</label>
+                <input
+                    type="email"
+                    name="username"
+                    id="username"
+                    ref={ emailRef }
+                    autoComplete="off"
+                    onChange={ (e) => setUserName(e.target.value) }
+                    value={ userName }
+                    required/>
+
             </div>
             <div className={ classes['input-parent'] }>
-                <label htmlFor="password">Password</label>
-                <input className={ inputError ? classes['input-error'] : '' }
-                       type="password"
-                       name="password"
-                       value={ inputs.password || "" }
-                       onChange={ handleChange }/>
-                {!validPassword && inputError &&  <span className={classes['error-message']}>Password must be at least 7 characters long</span>}
+                <label htmlFor="password">Password:</label>
+                <input
+                    type="password"
+                    name="password"
+                    id="password"
+                    autoComplete="off"
+                    onChange={ (e) => setPassword(e.target.value) }
+                    value={ password }
+                    required/>
             </div>
             <div className={ classes['button-wrapper'] }>
                 <button className={ classes['login-btn'] } type="submit">Login</button>

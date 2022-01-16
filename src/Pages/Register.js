@@ -93,8 +93,13 @@ const Register = () => {
         }));
 
         if (resUser.meta.requestStatus === 'fulfilled') {
-            const logingSuccess = await dispatch(login(resUser.payload));
-            setRedirect(logingSuccess);
+            const loginSuccess = await dispatch(login(resUser.payload));
+            console.log('register', loginSuccess);
+            if (loginSuccess.meta.requestStatus === 'rejected') {
+                setErrMessage(loginSuccess.payload.message ? loginSuccess.payload.message : 'Error occurred' );
+            } else if (loginSuccess.meta.requestStatus === 'fulfilled') {
+                setRedirect(loginSuccess.payload.success);
+            }
         } else {
             setErrMessage('registration failed');
             errRef.current.focus();
@@ -105,7 +110,7 @@ const Register = () => {
     return (<Fragment>
         {redirect && <Navigate to="/" />}
         {user && <p>{user.email}</p>}
-        <p ref={errRef} className={errMessage ? classes.errorMessage : classes.offScreen}
+        <p ref={errRef} className={errMessage ? "errorMessage" : "offScreen"}
            aria-live="assertive">{errMessage}</p>
         <form onSubmit={handleSubmit} className="form">
             <h2>Register</h2>
@@ -130,7 +135,7 @@ const Register = () => {
                        onFocus={() => setEmailFocus(true)}
                        onBlur={() => setEmailFocus(false)}/>
                 <p id="uidnote"
-                   className={emailFocus && email && !validEmail ? classes.instructions : classes.offScreen}>
+                   className={emailFocus && email && !validEmail ? classes.instructions : "offScreen"}>
                     <FontAwesomeIcon icon={faInfoCircle}/>
                     Must be a valid email address.
                 </p>
@@ -156,7 +161,7 @@ const Register = () => {
                     onBlur={() => setFirstNameFocus(false)}
                 />
                 <p id="fnamenote"
-                   className={firstNameFocus && firstName && !validFirstName ? classes.instructions : classes.offScreen}>
+                   className={firstNameFocus && firstName && !validFirstName ? classes.instructions : "offScreen"}>
                     <FontAwesomeIcon icon={faInfoCircle}/>
                     Must be alphanumeric.
                 </p>
@@ -182,7 +187,7 @@ const Register = () => {
                     onBlur={() => setLastNameFocus(false)}
                 />
                 <p id="lnamenote"
-                   className={lastNameFocus && lastName && !validLastName ? classes.instructions : classes.offScreen}>
+                   className={lastNameFocus && lastName && !validLastName ? classes.instructions : "offScreen"}>
                     <FontAwesomeIcon icon={faInfoCircle}/>
                     Must be alphanumeric.
                 </p>
@@ -208,7 +213,7 @@ const Register = () => {
                     onBlur={() => setPasswordFocus(false)}
                 />
                 <p id="pwdnote"
-                   className={passwordFocus && !validPassword ? classes.instructions : classes.offScreen}>
+                   className={passwordFocus && !validPassword ? classes.instructions : "offScreen"}>
                     <FontAwesomeIcon icon={faInfoCircle}/>
                     At least 7 characters long.
                     Must contain at least one lower case and one upper case letter.
@@ -246,7 +251,7 @@ const Register = () => {
                     onBlur={() => setConfirmPwdFocus(false)}
                 />
                 <p id="confirm-note"
-                   className={confirmPwdFocus && !matchingPwds ? classes.instructions : classes.offScreen}>
+                   className={confirmPwdFocus && !matchingPwds ? classes.instructions : "offScreen"}>
                     <FontAwesomeIcon icon={faInfoCircle}/>
                     Must match the password input field.
                 </p>
