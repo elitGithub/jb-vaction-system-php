@@ -20,18 +20,11 @@ export const Navbar = () => {
     useEffect(() => {
         setLoggedIn(user && user.loggedIn);
         setIsAdmin(user && user.isAdmin && user.loggedIn);
-        console.log('in use effect', user);
 
     }, [user]);
 
-    console.log('navbsar', user);
-
-    // setTimeout(() => {
-    //     console.log('timeout', state.user.getValue());
-    // }, 2000)
-
     return (<Fragment>
-        <div className={ classes.topnav }>
+        <div className={ classes.topNav }>
             { loggedIn && isAdmin && <Link to='/admin-panel'>
                 Admin Panel
             </Link> }

@@ -92,16 +92,20 @@ const Register = () => {
             isAdmin: false,
         }));
 
+        console.log('resUser', resUser);
+
         if (resUser.meta.requestStatus === 'fulfilled') {
             const loginSuccess = await dispatch(login(resUser.payload));
-            console.log('register', loginSuccess);
             if (loginSuccess.meta.requestStatus === 'rejected') {
-                setErrMessage(loginSuccess.payload.message ? loginSuccess.payload.message : 'Error occurred' );
+                setErrMessage(loginSuccess.payload ? loginSuccess.payload : 'Error occurred' );
             } else if (loginSuccess.meta.requestStatus === 'fulfilled') {
                 setRedirect(loginSuccess.payload.success);
             }
+        } else if(resUser.meta.requestStatus === 'rejected') {
+            setErrMessage(resUser.payload);
+            errRef.current.focus();
         } else {
-            setErrMessage('registration failed');
+            setErrMessage('Registration failed');
             errRef.current.focus();
             setRedirect(false);
         }
@@ -109,10 +113,9 @@ const Register = () => {
 
     return (<Fragment>
         {redirect && <Navigate to="/" />}
-        {user && <p>{user.email}</p>}
-        <p ref={errRef} className={errMessage ? "errorMessage" : "offScreen"}
-           aria-live="assertive">{errMessage}</p>
         <form onSubmit={handleSubmit} className="form">
+            <p ref={errRef} className={errMessage ? "errorMessage" : "offScreen"}
+               aria-live="assertive">{errMessage}</p>
             <h2>Register</h2>
 
             <div className={classes['input-parent']}>

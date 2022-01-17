@@ -16,9 +16,9 @@ const register = async (params) => {
     }
 };
 
-const findUser = async (searchParams) => {
+const findUserByEmail = async (searchParams) => {
     try {
-        return await User.find(searchParams);
+        return await User.find({ userName: searchParams.userName });
     } catch (e) {
         logEvents.customEmitter.emit('error', e);
         return false;
@@ -41,4 +41,4 @@ const listUsers = async () => {
     }
 };
 
-module.exports = { register, findUser, listUsers };
+module.exports = { register, findUserByEmail, listUsers };

@@ -18,8 +18,7 @@ export const register = createAsyncThunk('users/register', async (user, thunk) =
         if (res.hasOwnProperty('success') && res.success === true) {
             return data;
         } else {
-            console.log('failed', null);
-            return null;
+            return thunk.rejectWithValue(res.hasOwnProperty('message') ? res.message : 'An error occurred during registration.');
         }
     } catch (err) {
         let error = err // cast the error for access
@@ -34,7 +33,6 @@ export const register = createAsyncThunk('users/register', async (user, thunk) =
 export const login = createAsyncThunk('users/login', async (user, thunk) => {
     try {
         const res = await loginService.login(user);
-        console.log('from login thunk', res);
         const data = res.data;
         if (res.hasOwnProperty('success') && res.success === true) {
             return data;
