@@ -4,13 +4,7 @@ const path = require('path');
 const usersController = require("../controllers/usersController");
 
 router.route('/login(.html)?')
-    .post(async (req, res) => {
-        // const data = await usersController.findUserByEmail({userName: req.body.username, password: req.body.password});
-        // const success = !!data;
-        // const message = success ? '' : 'An error has occurred';
-        res.json({ success: true, message: '', data: [] });
-        res.end();
-    });
+    .post((req, res) => usersController.login());
 
 router.route('/register(.html)?')
     .get()

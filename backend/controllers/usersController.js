@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const logEvents = require('../middleware/logEvents');
 const passport = require('passport');
+const jwt = require("jsonwebtoken");
 
 
 passport.use(User.createStrategy());
@@ -28,13 +29,30 @@ const register = async (req, res) => {
                 });
             }
 
-            passport.authenticate("local", {}, (req, res) => {
-                return res.status(200).json({
-                    success: true,
-                    message: '',
-                    data: JSON.stringify(user)
-                });
-            });
+            if (user) {
+                return passport.authenticate('local', (err, info) => {
+                    if (err) {
+                        res.json({ success: false, message: err })
+                    } else if (!user) {
+                        res.json({ success: false, message: 'username or password incorrect' });
+                    } else {
+                        req.login(user, (err) => {
+                            if (err) {
+                                console.log('error here, line 40');
+                                console.log('41', err);
+                                res.json({ success: false, message: err })
+                            } else {
+                                const token = jwt.sign({
+                                        userId: user._id,
+                                        username: user.username
+                                    }, process.env.SECRET,
+                                    { expiresIn: '24h' })
+                                res.json({ success: true, message: "Authentication successful", token: token });
+                            }
+                        })
+                    }
+                })(req, res);
+            }
         });
     } catch (e) {
         logEvents.customEmitter.emit('error', e);
@@ -45,6 +63,8 @@ const register = async (req, res) => {
         });
     }
 };
+
+const login = async (params) => {};
 
 const findUserByEmail = async (searchParams) => {
     try {
@@ -71,4 +91,4 @@ const listUsers = async () => {
     }
 };
 
-module.exports = { register, findUserByEmail, listUsers };
+module.exports = { register, findUserByEmail, listUsers, login };
