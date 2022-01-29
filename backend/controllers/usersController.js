@@ -21,20 +21,28 @@ const register = async (req, res) => {
     try {
         return await User.register({ username: userName }, password, (err, user) => {
             if (err) {
-                return res.status(400).json({
+                return res.status(409).json({
                     success: false,
                     message: err.toString(),
                     data: []
                 });
             }
 
-            return passport.authenticate("local", {}, (req, res) => {
-                return res.json(user);
+            passport.authenticate("local", {}, (req, res) => {
+                return res.status(200).json({
+                    success: true,
+                    message: '',
+                    data: JSON.stringify(user)
+                });
             });
         });
     } catch (e) {
         logEvents.customEmitter.emit('error', e);
-        return e.toString();
+        return res.status(500).json({
+            success: false,
+            message: 'An internal server error occurred.',
+            data: []
+        });
     }
 };
 
