@@ -125,6 +125,7 @@ const Register = () => {
                 </label>
                 <input type="email"
                        id="username"
+                       inputMode="email"
                        ref={emailRef}
                        autoComplete="off"
                        onChange={(e) => {

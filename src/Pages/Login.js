@@ -26,17 +26,16 @@ const Login = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const loginSuccess = await dispatch(login({userName, password}));
-        console.log(loginSuccess);
+        const loginSuccess = await dispatch(login({ userName, password }));
         if (loginSuccess.meta.requestStatus === 'rejected') {
-            setErrMsg(loginSuccess.payload.message ? loginSuccess.payload.message : 'Error occurred' );
+            setErrMsg(loginSuccess.payload.message ? loginSuccess.payload.message : 'Error occurred');
         } else if (loginSuccess.meta.requestStatus === 'fulfilled') {
             setRedirect(loginSuccess.payload.success);
         }
     }
 
     return (<Fragment>
-        {redirect && <Navigate to="/" />}
+        { redirect && <Navigate to="/"/> }
         <form onSubmit={ handleSubmit } className="form">
             <p ref={ errRef } className={ errMessage ? "errorMessage" : "offScreen" } aria-live="assertive">{ errMessage }</p>
             <h2>Sign In</h2>
@@ -45,10 +44,11 @@ const Login = () => {
                 <input
                     type="email"
                     name="username"
+                    inputMode="email"
                     id="username"
                     ref={ emailRef }
                     autoComplete="off"
-                    onChange={ (e) => setUserName(e.target.value) }
+                    onChange={ e => setUserName(e.target.value) }
                     value={ userName }
                     required/>
 
@@ -60,7 +60,7 @@ const Login = () => {
                     name="password"
                     id="password"
                     autoComplete="off"
-                    onChange={ (e) => setPassword(e.target.value) }
+                    onChange={ e => setPassword(e.target.value) }
                     value={ password }
                     required/>
             </div>

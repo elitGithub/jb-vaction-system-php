@@ -3,22 +3,22 @@ const express = require('express');
 const path = require('path');
 const app = express();
 const cors = require('cors');
+const session = require('express-session');
 const passport = require('passport');
-const expressSession = require('express-session')
+
 const port = process.env.PORT || 3006;
 const { requestLogger, errorsLogger, logEvents } = require('./middleware/logEvents');
 const rootRouter = require('./routes/root');
 const usersRouter = require('./routes/users');
 const vacationsRouter = require('./routes/vacations');
 
-app.use(requestLogger);
-expressSession({
+app.use(session({
     secret: process.env.SECRET,
     resave: false,
     saveUninitialized: false
-});
+}));
 
-app.use(expressSession);
+app.use(requestLogger);
 app.use(passport.initialize());
 app.use(passport.session());
 const whiteList = ['http://127.0.0.1:3000', 'http://127.0.0.1', 'http://localhost:3500', 'http://localhost:3000'];

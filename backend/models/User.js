@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
+const passportLocalMongoose = require('passport-local-mongoose');
 
 const userSchema = new mongoose.Schema({
-    userName: {
+    username: {
         type: String,
         required: true,
         lowercase: true,
@@ -12,7 +13,6 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true,
         minLength: 8
     },
     firstName: String,
@@ -29,5 +29,7 @@ const userSchema = new mongoose.Schema({
     followedVacations: [String],
     // role: mongoose.SchemaTypes.ObjectId <- references another object based on id. Will be implemented with the Role model.
 });
+
+userSchema.plugin((passportLocalMongoose));
 
 module.exports = mongoose.model('User', userSchema);

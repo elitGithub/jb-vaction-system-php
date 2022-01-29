@@ -1,18 +1,40 @@
 const User = require('../models/User');
 const logEvents = require('../middleware/logEvents');
-const register = async (params) => {
+const passport = require('passport');
+
+
+passport.use(User.createStrategy());
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+const register = async (req, res) => {
+    const { userName, password } = req.body;
+    if (!password || !userName) {
+        res.status(400).json({
+            success: false,
+            message: 'Username and password are required.',
+            data: []
+        });
+
+        res.end();
+        return;
+    }
     try {
-        return await User.create({
-            userName: params.email,
-            password: params.password,
-            firstName: params.firstName,
-            lastName: params.lastName,
-            isAdmin: false,
-            loggedIn: true
+        return await User.register({ username: userName }, password, (err, user) => {
+            if (err) {
+                return res.status(400).json({
+                    success: false,
+                    message: err.toString(),
+                    data: []
+                });
+            }
+
+            return passport.authenticate("local", {}, (req, res) => {
+                return res.json(user);
+            });
         });
     } catch (e) {
         logEvents.customEmitter.emit('error', e);
-        return false;
+        return e.toString();
     }
 };
 
