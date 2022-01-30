@@ -19,9 +19,18 @@ abstract class Model
 
     public array $errors = [];
 
+    public function __construct () {
+        static::$db = PDOImplementation::getInstance();
+    }
+
     public function loadData(array $data)
     {
         foreach ($data as $key => $value) {
+
+            if (method_exists($this, 'renameAttributes')) {
+                $key = $this->renameAttributes($key);
+            }
+
             if (property_exists($this, $key)) {
                 $this->{$key} = $value;
             }
@@ -49,6 +58,9 @@ abstract class Model
     public function validate(): bool
     {
         foreach ($this->rules() as $attribute => $rules) {
+            if (method_exists($this, 'renameAttributes')) {
+                $attribute = $this->renameAttributes($attribute);
+            }
             $value = $this->{$attribute};
             foreach ($rules as $rule) {
                 $ruleName = $rule;
@@ -118,7 +130,7 @@ abstract class Model
                 $message = str_replace('{' . $key . '}', $value, $message);
             }
         }
-        $this->errors[$attribute][] = $message;
+        $this->addError($attribute, $message);
     }
 
 

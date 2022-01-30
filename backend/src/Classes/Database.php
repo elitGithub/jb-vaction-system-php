@@ -12,7 +12,7 @@ abstract class Database
     /**
      * @var Database| PDO
      */
-    protected Database | PDO $database;
+    protected Database | PDO | null $database = null;
     /**
      * @var bool
      */

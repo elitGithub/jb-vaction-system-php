@@ -2,7 +2,6 @@
 
 namespace Eli\Vacation;
 
-use Eli\Vacation\Controllers\UsersController;
 use Eli\Vacation\Exceptions\NotFoundException;
 use JetBrains\PhpStorm\Pure;
 
@@ -12,6 +11,7 @@ class Router
      * @var array
      */
     protected array $routes = [];
+    private string | array | false $appRoot;
 
     /**
      * Router constructor.
@@ -19,7 +19,10 @@ class Router
      * @param  Request   $request
      * @param  Response  $response
      */
-    #[Pure] public function __construct (public Request $request, public Response $response) {}
+    #[Pure] public function __construct (public Request $request, public Response $response)
+    {
+        $this->appRoot = getenv('REQUEST_ROOT');
+    }
 
     /**
      * @param $path
@@ -46,7 +49,7 @@ class Router
      */
     public function resolve (): mixed
     {
-        $path = $this->request->getPath();
+        $path = str_ireplace($this->appRoot, '', $this->request->getPath());
         $method = $this->request->method();
         $callback = $this->routes[$method][$path] ?? false;
 
@@ -58,9 +61,11 @@ class Router
         return call_user_func($callback, $this->request, $this->response);
     }
 
-    public function registerRoutes()
+    public function registerRoutes ()
     {
-        $this->post('/contact', [UsersController::class, 'register']);
-        $this->post('/contact', [UsersController::class, 'login']);
+        $this->get('', [Controllers\SiteController::class, 'index']);
+        $this->get('/', [Controllers\SiteController::class, 'index']);
+        $this->post('api/users/register', [Controllers\UsersController::class, 'register']);
+        $this->post('api/users/login', [Controllers\UsersController::class, 'login']);
     }
 }

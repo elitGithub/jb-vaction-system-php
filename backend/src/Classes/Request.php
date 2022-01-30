@@ -50,7 +50,7 @@ class Request
                 $_REQUEST = array_merge($_POST, $_REQUEST);
             }
             foreach ($_POST as $key => $value) {
-                $body[$key] = filter_input(INPUT_POST, $key, FILTER_SANITIZE_SPECIAL_CHARS);
+                $body[$key] = filter_var($value,FILTER_SANITIZE_STRING);
             }
         }
 

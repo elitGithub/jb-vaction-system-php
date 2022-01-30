@@ -2,6 +2,8 @@
 
 namespace Eli\Vacation;
 
+use JetBrains\PhpStorm\NoReturn;
+
 class Response
 {
     private bool $success = false;
@@ -63,7 +65,7 @@ class Response
         return $this;
     }
 
-    public function sendResponse ()
+    #[NoReturn] public function sendResponse ()
     {
         $this->setStatusCode($this->code);
         die(
