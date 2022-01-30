@@ -1,0 +1,16 @@
+{
+    "name": "eli/vacation",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "Eli\\Vacation\\": "src\\Classes"
+        }
+    },
+    "authors": [
+        {
+            "name": "Eli Tokar",
+            "email": "52536795+elitGithub@users.noreply.github.com"
+        }
+    ],
+    "require": {}
+}
