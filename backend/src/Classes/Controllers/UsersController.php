@@ -30,6 +30,11 @@ class UsersController extends Controller
         $this->response->setSuccess(false)->setMessage('Unsupported request method')->sendResponse();
     }
 
-    public function login () {}
+    public function login (Request $request) {
+        $user = new User();
+        if ($request->isPost()) {
+            echo 'hello world';
+        }
+    }
 
 }

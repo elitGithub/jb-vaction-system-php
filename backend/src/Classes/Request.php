@@ -33,13 +33,22 @@ class Request
         return ($this->method() === 'post');
     }
 
+    public function getHeaders(): array
+    {
+        $headers = [];
+        foreach (getallheaders() as $name => $value) {
+            $headers[$name] = $value;
+        }
+        return $headers;
+    }
+
     public function getBody(): array
     {
         $body = [];
 
         if ($this->isGet()) {
             foreach ($_GET as $key => $value) {
-                $body[$key] = filter_input(INPUT_GET, $key, FILTER_SANITIZE_SPECIAL_CHARS);
+                $body[$key] = filter_var($value,FILTER_SANITIZE_STRING);
             }
         }
 

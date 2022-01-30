@@ -12,5 +12,7 @@
             "email": "52536795+elitGithub@users.noreply.github.com"
         }
     ],
-    "require": {}
+    "require": {
+        "rbdwllr/reallysimplejwt": "^4.0"
+    }
 }

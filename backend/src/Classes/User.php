@@ -6,7 +6,6 @@ use JetBrains\PhpStorm\ArrayShape;
 
 class User extends DbModel
 {
-    protected string $table = 'users';
     public const STATUS_INACTIVE = 0;
     public const STATUS_ACTIVE = 1;
     public const STATUS_DELETED = 2;

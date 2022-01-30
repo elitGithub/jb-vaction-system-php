@@ -40,4 +40,18 @@ abstract class DbModel extends Model
             return false;
         }
     }
+
+    public static function findOne (array $where = [])
+    {
+        $tableName = static::tableName();
+        $attributes = array_keys($where);
+        $sqlWhere = implode(" AND ", array_map(fn($attr) => "$attr = :$attr", $attributes));
+        $db = PDOImplementation::getInstance();
+        $result = $db->preparedQuery("SELECT * FROM $tableName WHERE $sqlWhere", $where);
+        if ($result && $result->rowCount() > 0) {
+            return $result->fetchObject(static::class);
+        }
+
+        return null;
+    }
 }
