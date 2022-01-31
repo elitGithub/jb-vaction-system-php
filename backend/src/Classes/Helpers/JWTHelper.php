@@ -15,7 +15,7 @@ class JWTHelper
             return static::$appSecret;
         }
 
-        static::$appSecret = $_ENV['SECRET_KEY'];
+        static::$appSecret = getenv('SECRET_KEY');
         return static::$appSecret;
     }
 
@@ -35,17 +35,17 @@ class JWTHelper
         return $_SESSION['token'];
     }
 
-    public static function generateJwt ($userId): bool | string
+    public static function generateJwt ($userId): bool | string | array
     {
         try {
-            $expiration = time() + 3600;
+            $expiration = time() + 86400;
             $issuer = 'localhost';
-
             return Token::create($userId, getenv('SECRET_KEY'), $expiration, $issuer);
         } catch (Throwable $e) {
-            echo $e->getCode() . PHP_EOL;
-            echo $e->getMessage() . PHP_EOL;
-            return false;
+            return [
+                'error_code' => $e->getCode(),
+                'error_message' => $e->getMessage()
+            ];
         }
     }
 

@@ -17,7 +17,7 @@ class LogWriter
         }
 
         $dirName = dirname(__FILE__, 3) . DS . 'logs';
-        $fileName = 'errorLog.txt';
+        $fileName = date('Y-m-d') . '_errors_log.txt';
         $filePath = $dirName . DS . $fileName;
         FilesHandler::makeFile($dirName, $filePath);
         file_put_contents($filePath, $message . ' ' . $str, FILE_APPEND);
@@ -29,7 +29,7 @@ class LogWriter
             $str .= $key . ' ' . $value . ' ';
         }
         $dirName = dirname(__FILE__, 3) . DS . 'logs';
-        $fileName = 'criticalLog.txt';
+        $fileName = date('Y-m-d') . '_critical_log.txt';
         $filePath = $dirName . DS . $fileName;
         FilesHandler::makeFile($dirName, $filePath);
         file_put_contents($filePath, $message . ' ' . $str, FILE_APPEND);
