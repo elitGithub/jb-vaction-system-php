@@ -28,9 +28,9 @@ export const Navbar = () => {
             { loggedIn && isAdmin && <Link to='/admin-panel'>
                 Admin Panel
             </Link> }
-            { loggedIn && isAdmin && <button onClick={ addVacation }>
+            { loggedIn && isAdmin && <Link to='/' onClick={ addVacation }>
                 Add Vacation
-            </button> }
+            </Link> }
             { loggedIn && <Link to={ '/vacation-list' }>
                 Vacation List
             </Link> }

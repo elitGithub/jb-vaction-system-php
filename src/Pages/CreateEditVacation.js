@@ -20,9 +20,8 @@ const CreateEditVacation = props => {
         dispatch(showHide({ isShown: false }));
     }
     return (<Modal>
-        <form className={ classes.form }>
+        <form>
             <h2>{ props.title }</h2>
-
             <div className={ classes['input-parent'] }>
                 <label htmlFor="name">Email</label>
                 <input className={ inputError ? classes['input-error'] : '' }

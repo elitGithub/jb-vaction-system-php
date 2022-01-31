@@ -110,7 +110,6 @@ export const userSlice = createSlice({
 });
 
 const loginPromiseFulfilled = (state, userData) => {
-    console.log(userData);
     state.status = 'idle';
     state.pending = null;
     state.error = false;

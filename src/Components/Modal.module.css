@@ -4,20 +4,27 @@
     left: 0;
     width: 100%;
     height: 100vh;
-    z-index: 20;
+    z-index: 1;
+    opacity: 50%;
     background-color: rgba(0, 0, 0, 0.75);
 }
 
+
 .modal {
     position: fixed;
+    display: flex;
+    flex-direction: column;
     top: 20vh;
     left: 5%;
-    width: 90%;
-    background-color: white;
+    width: 100%;
+    margin: 40px auto;
+    font-family: "Segoe UI", sans-serif;
     padding: 1rem;
+    background: #151414;
     border-radius: 14px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-    z-index: 30;
+    border: 1px solid #302d2d;
+    z-index: 2;
     animation: slide-down 300ms ease-out forwards;
 }
 
