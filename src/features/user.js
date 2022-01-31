@@ -66,6 +66,7 @@ export const userSlice = createSlice({
     // So we would have firstName = action.payload.firstName, for example.
     reducers: {
         logout: (state, action) => {
+            localStorage.removeItem('token');
             return {
                 ...state,
                 value: initialStateValue
