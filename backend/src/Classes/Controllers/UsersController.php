@@ -2,6 +2,7 @@
 
 namespace Eli\Vacation\Controllers;
 
+use Eli\Vacation\Helpers\AuthHelper;
 use Eli\Vacation\Helpers\JWTHelper;
 use Eli\Vacation\Helpers\ResponseCodes;
 use Eli\Vacation\Request;
@@ -40,42 +41,68 @@ class UsersController extends Controller
             ->sendResponse();
     }
 
-    public function login (Request $request, Response $response)
+    #[NoReturn] public function validateToken(Request $request) {
+        $headers = array_change_key_case($request->getHeaders());
+        if (empty($headers['authorization'])) {
+            $this->response
+                ->setCode(ResponseCodes::HTTP_UNAUTHORIZED)
+                ->setSuccess(false)
+                ->setMessage('Missing authorization')
+                ->sendResponse();
+        }
+        $authToken = trim(str_ireplace('bearer', '', $headers['authorization']));
+        if (!JWTHelper::validate($authToken)) {
+            $this->response
+                ->setCode(ResponseCodes::HTTP_UNAUTHORIZED)
+                ->setSuccess(false)
+                ->setMessage('Invalid token')
+                ->sendResponse();
+        }
+
+        $parsedToken = JWTHelper::parseToken($authToken);
+
+        AuthHelper::refreshToken(User::findOne(['id' => $parsedToken['user_id']]));
+        $this->response
+            ->setSuccess(true)
+            ->setMessage('')
+            ->setData([
+                'user_id'   => $this->session->get('userId'),
+                'firstName' => $this->session->get('first_name'),
+                'lastName'  => $this->session->get('last_name'),
+                'active'    => $this->session->get('status'),
+                'roles'     => $this->session->get('role'),
+                'isAdmin'   => $this->session->get('isAdmin'),
+                'token'     => $this->session->get('token'),
+            ])
+            ->sendResponse();
+    }
+
+    public function login (Request $request)
     {
         if ($request->isPost()) {
             $body = array_change_key_case($request->getBody());
-            $username = $body['username'];
-            $password = $body['password'];
-            $user = User::findOne(['username' => $username]);
-            if (!$user || !password_verify($password, $user->password)) {
-                $response
+            $user = AuthHelper::login($body);
+
+            if (!$user) {
+                $this->response
                     ->setCode(ResponseCodes::HTTP_TEAPOT)
                     ->setSuccess(false)
                     ->setMessage('Incorrect credentials')
                     ->sendResponse();
             }
 
-            /**
-             * @var User $user
-             */
-            $userId = $user->{User::primaryKey()};
-            $token = JWTHelper::generateJwt($userId);
-            if (is_array($token)) {
-                $response
-                    ->setCode(ResponseCodes::HTTP_INTERNAL_SERVER_ERROR)
-                    ->setSuccess(false)
-                    ->setMessage($token['error_message'])
-                    ->sendResponse();
-            }
-
-            $user->token = $token;
-            $session = new Session();
-            $session->set('userId', $userId);
-            $session->set('username', $user->username);
-            $response
+            $this->response
                 ->setSuccess(true)
                 ->setMessage('')
-                ->setData(['user_id' => $userId, 'token' => $user->token])
+                ->setData([
+                    'user_id'   => $this->session->get('userId'),
+                    'firstName' => $this->session->get('first_name'),
+                    'lastName'  => $this->session->get('last_name'),
+                    'active'    => $this->session->get('status'),
+                    'roles'     => $this->session->get('role'),
+                    'isAdmin'   => $this->session->get('isAdmin'),
+                    'token'     => $this->session->get('token'),
+                ])
                 ->sendResponse();
         }
     }

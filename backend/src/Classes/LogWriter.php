@@ -7,6 +7,11 @@ use Eli\Vacation\Helpers\FilesHandler;
 class LogWriter
 {
 
+    public static function getLogger ()
+    {
+        return new static();
+    }
+
     public function error (string $message, array $context = []) {
         if (!defined('DS')) {
             define('DS', DIRECTORY_SEPARATOR);

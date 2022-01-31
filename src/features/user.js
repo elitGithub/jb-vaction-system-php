@@ -1,13 +1,14 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import UsersService from "../services/usersService";
 import loginService from "../services/loginService";
+import LoginService from "../services/loginService";
 
 const initialStateValue = {
     firstName: '',
     lastName: '',
     email: '',
-    password: '',
     loggedIn: false,
+    token: '',
     isAdmin: false
 };
 
@@ -21,7 +22,7 @@ export const register = createAsyncThunk('users/register', async (user, thunk) =
             return thunk.rejectWithValue(res.hasOwnProperty('message') ? res.message : 'An error occurred during registration.');
         }
     } catch (err) {
-        let error = err // cast the error for access
+        let error = err; // cast the error for access
         if (!error.response) {
             throw err;
         }
@@ -30,18 +31,18 @@ export const register = createAsyncThunk('users/register', async (user, thunk) =
 
 });
 
+export const refresh = createAsyncThunk('users/refresh', async (user, thunk) => {
+    return LoginService.checkLogin();
+});
+
 export const login = createAsyncThunk('users/login', async (user, thunk) => {
     try {
         const res = await loginService.login(user);
-        console.log(res);
         const data = res.data;
-        const accessToken = data?.accessToken;
-        const roles = data?.roles;
         if (res.hasOwnProperty('success') && res.success === true) {
-
             return data;
         } else {
-            return thunk.rejectWithValue({success: false, message: res.message ? res.message : 'An error occurred', data: []});
+            return thunk.rejectWithValue({ success: false, message: res.message ? res.message : 'An error occurred', data: [] });
         }
     } catch (err) {
         let error = err // cast the error for access
@@ -89,14 +90,36 @@ export const userSlice = createSlice({
                 state.error = false;
                 state.value = action.payload;
             })
-        .addCase(login.fulfilled, (state, action) => {
-                state.status = 'idle';
-                state.pending = null;
+            .addCase(login.pending, (state) => {
+                state.status = 'loading';
+                state.pending = true;
                 state.error = false;
-                state.value.loggedIn = true;
+            })
+            .addCase(login.rejected, (state) => {
+                state.status = 'rejected';
+                state.pending = null;
+                state.error = true;
+            })
+            .addCase(refresh.fulfilled, (state, action) => {
+                loginPromiseFulfilled(state, action.payload);
+            })
+            .addCase(login.fulfilled, (state, action) => {
+                loginPromiseFulfilled(state, action.payload);
             });
     }
 });
+
+const loginPromiseFulfilled = (state, userData) => {
+    console.log(userData);
+    state.status = 'idle';
+    state.pending = null;
+    state.error = false;
+    state.value = userData;
+    state.value.loggedIn = userData.hasOwnProperty('token') && userData.token.length > 0;
+    if (state.value.loggedIn) {
+        localStorage.setItem('token', userData.token);
+    }
+}
 
 // Exporting just the reducer method
 export default userSlice.reducer;

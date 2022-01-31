@@ -65,6 +65,7 @@ class Router
     {
         $this->get('', [Controllers\SiteController::class, 'index']);
         $this->get('/', [Controllers\SiteController::class, 'index']);
+        $this->get('api/users/login', [Controllers\UsersController::class, 'validateToken']);
         $this->post('api/users/register', [Controllers\UsersController::class, 'register']);
         $this->post('api/users/login', [Controllers\UsersController::class, 'login']);
     }
