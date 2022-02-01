@@ -2,20 +2,19 @@
 
 namespace Eli\Vacation;
 
+use Eli\Vacation\Helpers\Url;
 use JetBrains\PhpStorm\Pure;
 
 class Request
 {
+    private Url $url;
+    #[Pure] public function __construct () {
+        $this->url = new Url();
+    }
 
     public function getPath()
     {
-        $path = $_SERVER['REQUEST_URI'] ?? '/';
-        $position = strpos($path, '?');
-        if ($position === false) {
-            return $path;
-        }
-
-        return substr($path, 0, $position);
+        return $this->url->segment($this->url->justRoute($this->url->requestedUrl()));
     }
 
     public function getUri() {

@@ -42,13 +42,6 @@ class Router
         $this->routes['post'][$path] = $callback;
     }
 
-    private function attachParams ($path)
-    {
-        $parser = new Helpers\RouteParser();
-        var_dump($parser->parse($path));
-    }
-
-
     /**
      * @return mixed
      * @throws NotFoundException
@@ -56,7 +49,6 @@ class Router
     public function resolve (): mixed
     {
         $path = str_ireplace($this->appRoot, '', $this->request->getPath());
-        $this->attachParams($path);
         $method = $this->request->method();
         $callback = $this->routes[$method][$path] ?? false;
 
@@ -72,12 +64,12 @@ class Router
     {
         $this->get('', [Controllers\SiteController::class, 'index']);
         $this->get('/', [Controllers\SiteController::class, 'index']);
-        $this->get('api/users/login', [Controllers\UsersController::class, 'validateToken']);
-        $this->get('api/vacations/vacation/{id}', [Controllers\VacationsController::class, 'getVacation']);
+        $this->get('login', [Controllers\UsersController::class, 'validateToken']);
+        $this->get('vacation/{id}', [Controllers\VacationsController::class, 'getVacation']);
 
-        $this->post('api/vacations/vacation', [Controllers\VacationsController::class, 'createVacation']);
-        $this->post('api/vacations/vacation/{id}', [Controllers\VacationsController::class, 'updateVacation']);
-        $this->post('api/users/register', [Controllers\UsersController::class, 'register']);
-        $this->post('api/users/login', [Controllers\UsersController::class, 'login']);
+        $this->post('vacation', [Controllers\VacationsController::class, 'createVacation']);
+        $this->post('vacation/{id}', [Controllers\VacationsController::class, 'updateVacation']);
+        $this->post('register', [Controllers\UsersController::class, 'register']);
+        $this->post('login', [Controllers\UsersController::class, 'login']);
     }
 }
