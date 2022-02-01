@@ -21,9 +21,6 @@ abstract class DbModel extends Model
             $query = "INSERT INTO $tableName (" . implode(',', $columns) . ") VALUES ($placeholders);";
             $values = [];
             foreach ($columns as $attribute) {
-                if (method_exists($this, 'renameAttributes')) {
-                    $attribute = $this->renameAttributes($attribute);
-                }
                 $values[] = $this->{$attribute};
             }
             $result = static::$db->preparedQuery($query, $values);

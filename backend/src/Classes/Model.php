@@ -19,11 +19,12 @@ abstract class Model
 
     public array $errors = [];
 
-    public function __construct () {
+    public function __construct ()
+    {
         static::$db = PDOImplementation::getInstance();
     }
 
-    public function loadData(array $data)
+    public function loadData (array $data)
     {
         foreach ($data as $key => $value) {
 
@@ -40,14 +41,14 @@ abstract class Model
     /**
      * @return array
      */
-    abstract public function rules(): array;
+    abstract public function rules (): array;
 
-    public function labels(): array
+    public function labels (): array
     {
         return [];
     }
 
-    #[Pure] public function getLabel($attribute)
+    #[Pure] public function getLabel ($attribute)
     {
         return $this->labels()[$attribute] ?? $attribute;
     }
@@ -55,12 +56,9 @@ abstract class Model
     /**
      * @return bool
      */
-    public function validate(): bool
+    public function validate (): bool
     {
         foreach ($this->rules() as $attribute => $rules) {
-            if (method_exists($this, 'renameAttributes')) {
-                $attribute = $this->renameAttributes($attribute);
-            }
             $value = $this->{$attribute};
             foreach ($rules as $rule) {
                 $ruleName = $rule;
@@ -94,8 +92,11 @@ abstract class Model
                     $uniqueAttr = $rule['attribute'] ?? $attribute;
 
                     if ($this->uniqueAttribute($className::tableName(), $uniqueAttr, $value)) {
-                        $this->addErrorForRule($attribute, static::RULE_UNIQUE,
-                            ['field' => $this->getLabel($attribute)]);
+                        $this->addErrorForRule(
+                            $attribute,
+                            static::RULE_UNIQUE,
+                            ['field' => $this->getLabel($attribute)]
+                        );
                     }
                 }
             }
@@ -104,7 +105,7 @@ abstract class Model
         return empty($this->errors);
     }
 
-    protected function uniqueAttribute($tableName, $uniqueAttrName, $uniqueAttrValue): bool
+    protected function uniqueAttribute ($tableName, $uniqueAttrName, $uniqueAttrValue): bool
     {
         if (!(static::$db instanceof Database)) {
             static::$db = PDOImplementation::getInstance();
@@ -122,7 +123,7 @@ abstract class Model
      * @param  string  $rule
      * @param  array|string  $params
      */
-    public function addErrorForRule(string $attribute, string $rule, array|string $params = [])
+    public function addErrorForRule (string $attribute, string $rule, array | string $params = [])
     {
         $message = $this->errorMessages()[$rule] ?? '';
         if (is_array($params)) {
@@ -134,7 +135,7 @@ abstract class Model
     }
 
 
-    public function addError(string $attribute, string $message)
+    public function addError (string $attribute, string $message)
     {
         $this->errors[$attribute][] = $message;
     }
@@ -148,8 +149,8 @@ abstract class Model
         self::RULE_MIN      => "string",
         self::RULE_MAX      => "string",
         self::RULE_MATCH    => "string",
-        self::RULE_UNIQUE   => "string"
-    ])] public function errorMessages(): array
+        self::RULE_UNIQUE   => "string",
+    ])] public function errorMessages (): array
     {
         return [
             static::RULE_REQUIRED => 'This field is required.',
@@ -166,7 +167,7 @@ abstract class Model
      *
      * @return mixed
      */
-    public function hasError($attribute): mixed
+    public function hasError ($attribute): mixed
     {
         return $this->errors[$attribute] ?? false;
     }
@@ -176,7 +177,7 @@ abstract class Model
      *
      * @return mixed
      */
-    public function getFirstError($attribute): mixed
+    public function getFirstError ($attribute): mixed
     {
         return $this->errors[$attribute][0] ?? '';
     }

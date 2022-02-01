@@ -6,10 +6,10 @@ use Eli\Vacation\Helpers\AuthHelper;
 use Eli\Vacation\Helpers\JWTHelper;
 use Eli\Vacation\Helpers\ResponseCodes;
 use Eli\Vacation\Request;
-use Eli\Vacation\Response;
-use Eli\Vacation\Session;
 use Eli\Vacation\User;
+use JetBrains\PhpStorm\ArrayShape;
 use JetBrains\PhpStorm\NoReturn;
+use JetBrains\PhpStorm\Pure;
 
 class UsersController extends Controller
 {
@@ -22,14 +22,15 @@ class UsersController extends Controller
             if ($user->validate() && $user->save()) {
                 $this->response
                     ->setSuccess(true)
-                    ->setMessage('Hooray')
+                    ->setMessage('')
                     ->sendResponse();
             }
 
             $errMsg = '';
             foreach ($user->attributes() as $attribute) {
                 if ($user->hasError($attribute)) {
-                    $errMsg .= $attribute . ' ' . $user->getFirstError($attribute) . PHP_EOL;
+                    $label = $user->getLabel($attribute);
+                    $errMsg .= $label . ' ' . $user->getFirstError($attribute) . ' ';
                 }
             }
             $this->response->setSuccess(false)->setMessage($errMsg)->sendResponse();
@@ -65,16 +66,28 @@ class UsersController extends Controller
         $this->response
             ->setSuccess(true)
             ->setMessage('')
-            ->setData([
-                'user_id'   => $this->session->get('userId'),
-                'firstName' => $this->session->get('first_name'),
-                'lastName'  => $this->session->get('last_name'),
-                'active'    => $this->session->get('status'),
-                'roles'     => $this->session->get('role'),
-                'isAdmin'   => $this->session->get('isAdmin'),
-                'token'     => $this->session->get('token'),
-            ])
+            ->setData($this->retrieveUserDataFromSession())
             ->sendResponse();
+    }
+
+    #[Pure] #[ArrayShape(['user_id'   => "false|mixed",
+                          'firstName' => "false|mixed",
+                          'lastName'  => "false|mixed",
+                          'active'    => "false|mixed",
+                          'roles'     => "false|mixed",
+                          'isAdmin'   => "false|mixed",
+                          'token'     => "false|mixed"
+    ])] private function retrieveUserDataFromSession(): array
+    {
+        return [
+            'user_id'   => $this->session->get('userId'),
+            'firstName' => $this->session->get('first_name'),
+            'lastName'  => $this->session->get('last_name'),
+            'active'    => $this->session->get('status'),
+            'roles'     => $this->session->get('role'),
+            'isAdmin'   => $this->session->get('isAdmin'),
+            'token'     => $this->session->get('token'),
+        ];
     }
 
     public function login (Request $request)
@@ -94,15 +107,7 @@ class UsersController extends Controller
             $this->response
                 ->setSuccess(true)
                 ->setMessage('')
-                ->setData([
-                    'user_id'   => $this->session->get('userId'),
-                    'firstName' => $this->session->get('first_name'),
-                    'lastName'  => $this->session->get('last_name'),
-                    'active'    => $this->session->get('status'),
-                    'roles'     => $this->session->get('role'),
-                    'isAdmin'   => $this->session->get('isAdmin'),
-                    'token'     => $this->session->get('token'),
-                ])
+                ->setData($this->retrieveUserDataFromSession())
                 ->sendResponse();
         }
     }

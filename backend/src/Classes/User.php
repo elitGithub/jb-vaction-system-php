@@ -28,17 +28,17 @@ class User extends DbModel
     }
 
     #[ArrayShape([
-        'firstName'        => "array",
-        'lastName'         => "array",
-        'userName'         => "array",
+        'first_name'        => "array",
+        'last_name'         => "array",
+        'username'         => "array",
         'password'         => "array",
         'confirm_password' => "array",
     ])] public function rules (): array
     {
         return [
-            'firstName'        => [static::RULE_REQUIRED],
-            'lastName'         => [static::RULE_REQUIRED],
-            'userName'         => [
+            'first_name'        => [static::RULE_REQUIRED],
+            'last_name'         => [static::RULE_REQUIRED],
+            'username'         => [
                 static::RULE_REQUIRED,
                 static::RULE_EMAIL,
                 [static::RULE_UNIQUE, 'class' => static::class],
