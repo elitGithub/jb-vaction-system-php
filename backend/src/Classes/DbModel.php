@@ -6,6 +6,7 @@ use Throwable;
 
 abstract class DbModel extends Model
 {
+    protected array $attributesMap;
     abstract public static function tableName(): string;
 
     abstract public function attributes(): array;
@@ -31,7 +32,6 @@ abstract class DbModel extends Model
             return false;
         } catch (Throwable $e) {
             if (method_exists($this, 'logErrors')) {
-                // TODO: add log!
                 $this->logErrors($e->getMessage(), $e->getTraceAsString());
             }
             return false;
@@ -50,5 +50,17 @@ abstract class DbModel extends Model
         }
 
         return null;
+    }
+
+    public function renameAttributes ($attribute): string
+    {
+
+        if (isset($this->attributesMap[$attribute])) {
+            return $this->attributesMap[$attribute];
+        }
+
+        return $attribute;
+
+
     }
 }

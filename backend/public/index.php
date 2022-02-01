@@ -22,6 +22,7 @@ try {
 } catch (Eli\Vacation\Exceptions\NotFoundException $e) {
     $router->response
         ->setSuccess(false)
+        ->setCode($e->getCode())
         ->setMessage($e->getMessage())
         ->sendResponse();
 }

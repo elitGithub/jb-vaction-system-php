@@ -13,6 +13,7 @@
         }
     ],
     "require": {
-        "rbdwllr/reallysimplejwt": "^4.0"
+        "rbdwllr/reallysimplejwt": "^4.0",
+        "nikic/fast-route": "^1.3"
     }
 }

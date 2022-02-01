@@ -42,6 +42,12 @@ class Router
         $this->routes['post'][$path] = $callback;
     }
 
+    private function attachParams ($path)
+    {
+        $parser = new Helpers\RouteParser();
+        var_dump($parser->parse($path));
+    }
+
 
     /**
      * @return mixed
@@ -50,6 +56,7 @@ class Router
     public function resolve (): mixed
     {
         $path = str_ireplace($this->appRoot, '', $this->request->getPath());
+        $this->attachParams($path);
         $method = $this->request->method();
         $callback = $this->routes[$method][$path] ?? false;
 

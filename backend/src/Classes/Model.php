@@ -2,6 +2,7 @@
 
 namespace Eli\Vacation;
 
+use Eli\Vacation\Helpers\DateTimeHelper;
 use JetBrains\PhpStorm\ArrayShape;
 use JetBrains\PhpStorm\Pure;
 
@@ -16,6 +17,7 @@ abstract class Model
     public const RULE_MAX = 'max';
     public const RULE_MATCH = 'match';
     public const RULE_UNIQUE = 'unique';
+    public const RULE_IS_DATE = 'is_valid_date_time';
 
     public array $errors = [];
 
@@ -27,7 +29,6 @@ abstract class Model
     public function loadData (array $data)
     {
         foreach ($data as $key => $value) {
-
             if (method_exists($this, 'renameAttributes')) {
                 $key = $this->renameAttributes($key);
             }
@@ -85,6 +86,10 @@ abstract class Model
                 if ($ruleName === static::RULE_MATCH && $value !== $this->{$rule['match']}) {
                     $rule['match'] = $this->getLabel($rule['match']);
                     $this->addErrorForRule($attribute, static::RULE_MATCH, $rule);
+                }
+
+                if ($ruleName === static::RULE_IS_DATE && !DateTimeHelper::isValidDateTime($value)) {
+                    $this->addErrorForRule($attribute, static::RULE_IS_DATE, $rule);
                 }
 
                 if ($ruleName === static::RULE_UNIQUE) {
@@ -150,6 +155,7 @@ abstract class Model
         self::RULE_MAX      => "string",
         self::RULE_MATCH    => "string",
         self::RULE_UNIQUE   => "string",
+        self::RULE_IS_DATE  => "string",
     ])] public function errorMessages (): array
     {
         return [
@@ -159,6 +165,7 @@ abstract class Model
             static::RULE_MAX      => 'This field must be at most {max} characters long.',
             static::RULE_MATCH    => 'This field must be the same as {match}.',
             static::RULE_UNIQUE   => 'Record with this {field} already exists.',
+            static::RULE_IS_DATE  => 'This field must be a valid date time.',
         ];
     }
 

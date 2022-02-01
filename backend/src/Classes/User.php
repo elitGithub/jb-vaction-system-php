@@ -15,6 +15,12 @@ class User extends DbModel
     public string $password = '';
     public int $status = self::STATUS_INACTIVE;
     public string $confirm_password = '';
+    protected array $attributesMap = [
+            'firstName' => 'first_name',
+            'lastName'  => 'last_name',
+            'userName'  => 'username',
+            'password'  => 'password',
+        ];
 
 
     public function attributes (): array
@@ -90,24 +96,6 @@ class User extends DbModel
         $this->status = static::STATUS_ACTIVE;
 
         return parent::save();
-    }
-
-    public function renameAttributes ($attribute): string
-    {
-        $map = [
-            'firstName' => 'first_name',
-            'lastName'  => 'last_name',
-            'userName'  => 'username',
-            'password'  => 'password',
-        ];
-
-        if (isset($map[$attribute])) {
-            return $map[$attribute];
-        }
-
-        return $attribute;
-
-
     }
 
 }

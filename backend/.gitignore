@@ -1,5 +1,5 @@
 env.php
-vendor/
+vendor/*
 .env
 config.php
 logs/
