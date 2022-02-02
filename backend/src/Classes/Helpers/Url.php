@@ -67,6 +67,7 @@ class Url
                 $_GET['id'] = $end;
                 // Routes with IDs should be structured as /controller/id.
                 unset($segments[array_key_last($segments)]);
+                $segments[array_key_last($segments)] .= '/{id}';
                 return true;
             }
         }

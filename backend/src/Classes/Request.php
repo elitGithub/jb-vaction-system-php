@@ -17,12 +17,6 @@ class Request
         return $this->url->segment($this->url->justRoute($this->url->requestedUrl()));
     }
 
-    public function getUri() {
-        // $current_uri is urldecoded route path
-        $splitted_uri = explode('/', $_SERVER['REQUEST_URI']);
-        var_dump($splitted_uri);
-    }
-
     public function method(): string
     {
         return strtolower($_SERVER['REQUEST_METHOD']);
