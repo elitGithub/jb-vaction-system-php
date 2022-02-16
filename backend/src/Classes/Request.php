@@ -2,19 +2,30 @@
 
 namespace Eli\Vacation;
 
+use Eli\Vacation\Helpers\StringsHelper;
 use Eli\Vacation\Helpers\Url;
 use JetBrains\PhpStorm\Pure;
 
 class Request
 {
     private Url $url;
-    #[Pure] public function __construct () {
+    public function __construct () {
         $this->url = new Url();
+        $this->bootstrapSelf();
+
     }
 
     public function getPath()
     {
         return $this->url->segment($this->url->justRoute($this->url->requestedUrl()));
+    }
+
+    private function bootstrapSelf()
+    {
+        foreach($_SERVER as $key => $value)
+        {
+            $this->{StringsHelper::toCamelCase($key)} = $value;
+        }
     }
 
     public function method(): string

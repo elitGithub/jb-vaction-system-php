@@ -10,13 +10,22 @@ class Url
         ''      => '/',
     ];
 
+    /**
+     * Removes trailing forward slashes from the right of the route.
+     * @param string $route (string)
+     */
+    private function trimSlashes(string $route): string
+    {
+        $result = rtrim($route, '/');
+        return ltrim($result, '/');
+    }
+
     public function segment(string $url)
     {
         if ($url === '/') {
             return $url;
         }
-
-        $url = ltrim($url, '/');
+        $url = $this->trimSlashes($url);
 
         // Now we have the requested path
         $segments = explode('/', $url);
@@ -31,19 +40,19 @@ class Url
             return $this->removeFileExtensions($requestedRoute);
         }
 
-        return join('/', $segments);
+        return $this->justRoute(join('/', $segments));
     }
 
     public function justRoute($url): array|string
     {
         // Remove the url of the website, so we're left with just the requested path.
         $http = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://";
-        return str_replace($http . getenv('REQUEST_ROOT'), '', $url);
+        return str_replace($http . getenv('APP_ROOT'), '', $url);
     }
 
     public function requestedUrl(): string
     {
-        return (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+        return strtolower($_SERVER['REQUEST_URI']) ;
     }
 
     private function removeFileExtensions(string $path): bool|string

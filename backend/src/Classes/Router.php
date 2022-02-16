@@ -1,75 +1,77 @@
 <?php
+declare(strict_types=1);
 
 namespace Eli\Vacation;
 
-use Eli\Vacation\Exceptions\NotFoundException;
-use JetBrains\PhpStorm\Pure;
+use ArrayIterator;
+use Eli\Vacation\Helpers\ResponseCodes;
+use Eli\Vacation\Helpers\UrlGenerator;
+use Exception;
+use Psr\Http\Message\ServerRequestInterface;
 
 class Router
 {
+    private const NO_ROUTE = ResponseCodes::HTTP_NOT_FOUND;
+
     /**
-     * @var array
+     * @var ArrayIterator
      */
-    protected array $routes = [];
-    private string | array | false $appRoot;
+    private ArrayIterator $routes;
+
+    /**
+     * @var UrlGenerator
+     */
+    private UrlGenerator $urlGenerator;
 
     /**
      * Router constructor.
-     *
-     * @param  Request   $request
-     * @param  Response  $response
+     * @param $routes array<Route>
      */
-    #[Pure] public function __construct (public Request $request, public Response $response)
+    public function __construct(array $routes = [])
     {
-        $this->appRoot = getenv('REQUEST_ROOT');
+        $this->routes = new ArrayIterator();
+        $this->urlGenerator = new UrlGenerator($this->routes);
+        foreach ($routes as $route) {
+            $this->add($route);
+        }
     }
 
-    /**
-     * @param $path
-     * @param $callback
-     */
-    public function get ($path, $callback)
+
+    public function add(Route $route): self
     {
-        $this->routes['get'][$path] = $callback;
+        $this->routes->offsetSet($route->getName(), $route);
+        return $this;
     }
 
-    /**
-     * @param $path
-     * @param $callback
-     */
-    public function post ($path, $callback)
+    public function match(ServerRequestInterface $serverRequest): Route
     {
-        $this->routes['post'][$path] = $callback;
+        return $this->matchFromPath($serverRequest->getUri()->getPath(), $serverRequest->getMethod());
     }
 
-    /**
-     * @return mixed
-     * @throws NotFoundException
-     */
-    public function resolve (): mixed
+    public function matchFromPath(string $path, string $method): Route
     {
-        $path = str_ireplace($this->appRoot, '', $this->request->getPath());
-        $method = $this->request->method();
-        $callback = $this->routes[$method][$path] ?? false;
-
-        if (!$callback || !is_array($callback)) {
-            throw new NotFoundException();
+        foreach ($this->routes as $route) {
+            if ($route->match($path, $method) === false) {
+                continue;
+            }
+            return $route;
         }
 
-        $callback[0] = new $callback[0]();
-        return call_user_func($callback, $this->request, $this->response);
+        throw new Exception(
+            'No route found for ' . $method,
+            self::NO_ROUTE
+        );
     }
 
-    public function registerRoutes ()
-    {
-        $this->get('', [Controllers\SiteController::class, 'index']);
-        $this->get('/', [Controllers\SiteController::class, 'index']);
-        $this->get('login', [Controllers\UsersController::class, 'validateToken']);
-        $this->get('vacation/{id}', [Controllers\VacationsController::class, 'getVacation']);
 
-        $this->post('vacation', [Controllers\VacationsController::class, 'createVacation']);
-        $this->post('vacation/{id}', [Controllers\VacationsController::class, 'updateVacation']);
-        $this->post('register', [Controllers\UsersController::class, 'register']);
-        $this->post('login', [Controllers\UsersController::class, 'login']);
+
+    public function generateUri(string $name, array $parameters = []): string
+    {
+        return $this->urlGenerator->generate($name, $parameters);
+    }
+
+    public function getUrlgenerator(): UrlGenerator
+    {
+        return $this->urlGenerator;
     }
 }

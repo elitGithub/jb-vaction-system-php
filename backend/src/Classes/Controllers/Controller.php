@@ -3,6 +3,7 @@
 namespace Eli\Vacation\Controllers;
 
 use Eli\Vacation\Middlewares\BaseMiddleware;
+use Eli\Vacation\Request;
 use Eli\Vacation\Response;
 use Eli\Vacation\Session;
 use JetBrains\PhpStorm\Pure;
@@ -14,10 +15,12 @@ class Controller
     public string $action = '';
     protected Response $response;
     protected Session $session;
+    protected Request $request;
 
-    #[Pure] public function __construct () {
+    public function __construct () {
         $this->response = new Response();
         $this->session = new Session();
+        $this->request = new Request();
     }
 
     /**

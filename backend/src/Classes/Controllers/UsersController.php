@@ -42,8 +42,8 @@ class UsersController extends Controller
             ->sendResponse();
     }
 
-    #[NoReturn] public function validateToken(Request $request) {
-        $headers = array_change_key_case($request->getHeaders());
+    #[NoReturn] public function validateToken() {
+        $headers = array_change_key_case($this->request->getHeaders());
         if (empty($headers['authorization'])) {
             $this->response
                 ->setCode(ResponseCodes::HTTP_UNAUTHORIZED)

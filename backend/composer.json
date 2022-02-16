@@ -14,6 +14,7 @@
     ],
     "require": {
         "rbdwllr/reallysimplejwt": "^4.0",
-      "ext-ctype": "*"
+        "ext-ctype": "*",
+        "psr/http-message": "^1.0"
     }
 }

@@ -34,6 +34,7 @@ abstract class DbModel extends Model
             if (method_exists($this, 'logErrors')) {
                 $this->logErrors($e->getMessage(), $e->getTraceAsString());
             }
+            var_dump($e->getMessage());
             return false;
         }
     }

@@ -3,3 +3,4 @@ vendor/*
 .env
 config.php
 logs/
+tests/

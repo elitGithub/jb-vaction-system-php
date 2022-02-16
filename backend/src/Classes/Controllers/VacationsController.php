@@ -10,15 +10,15 @@ use JetBrains\PhpStorm\NoReturn;
 class VacationsController extends Controller
 {
 
-    public function getVacation (Request $request)
+    public function getVacation (int $id)
     {
-
+        var_dump($id);
     }
 
-    #[NoReturn] public function createVacation (Request $request)
+    #[NoReturn] public function createVacation (...$args)
     {
         $vacation = new Vacation();
-        $vacation->loadData($request->getBody());
+        $vacation->loadData($args);
         $vacation->start_date = DateTimeHelper::mutateDateTime($vacation->start_date);
         $vacation->end_date = DateTimeHelper::mutateDateTime($vacation->end_date);
         if ($vacation->validate() && $vacation->save()) {
